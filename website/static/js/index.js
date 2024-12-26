@@ -40,35 +40,17 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-
-
-
-document.getElementById("catalogLink").addEventListener("click", function(event) {
-    event.preventDefault();
-    window.location.href = "/#type_products";
-});
-
-
-
 document.addEventListener('DOMContentLoaded', function () {
-    
     window.addEventListener('load', function () {
         document.body.classList.add('loaded');
     });
 
-
-
-
     var scrollLinks = document.querySelectorAll('.scroll-link');
-  
     scrollLinks.forEach(function(scrollLink) {
       scrollLink.addEventListener('click', function(event) {
         event.preventDefault();
-  
         var targetId = this.getAttribute('href').substring(1);
-  
         var targetElement = document.getElementById(targetId);
-  
         targetElement.scrollIntoView({
           behavior: 'smooth'
         });
@@ -201,7 +183,6 @@ document.addEventListener('DOMContentLoaded', function () {
         input.addEventListener('input', restrictToNumeric);
     });
 
-
     function restrictToNumericPlus(event) {
         var input = event.target;
         var value = input.value;    
@@ -211,11 +192,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     var numericPlusOnlyInputs = document.querySelectorAll('.numeric-plus-only');
-
     numericPlusOnlyInputs.forEach(function(input) {
         input.addEventListener('input', restrictToNumericPlus);
     });
-
 
     //---------------------------------------------- city list begin
     let belarusCities = [];
@@ -291,6 +270,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(`City "${enteredCity}" not found in db.`);
         }
     });
+
     //---------------------------------------------- input city end
     var receivingPointInput = document.getElementById("receiving_point");
     var receivingPointContainer = document.querySelector(".cont_receiving_point");
@@ -328,6 +308,8 @@ document.addEventListener("DOMContentLoaded", function() {
             }, 200); 
         });
     });
+
+
 });
 
 //end
@@ -338,81 +320,11 @@ setTimeout(function() {
     alertBox.classList.add('hidden');
 }, 2000);
 //end
-//del item in basket
-function deleteItem(id) {
-    fetch("/remove_item", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ id: id })
-    }).then((response) => {
-        if (response.ok) {
-            window.location.reload();
-        } else {
-            console.error("Ошибка при удалении товара");
-        }
-    });
-    }
-//end
-//---------------------------------------------- city list begin
-let belarusCities = [];
 
-function loadBelarusCities() {
-    const username = 'tw1chee2k';
-    const url = `https://secure.geonames.org/searchJSON?country=BY&maxRows=1000&username=${username}`;
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            if (data && data.geonames) {
-                belarusCities = data.geonames.map(city => city.name);
-            }
-        })
-        .catch(error => console.error('Ошибка при загрузке городов:', error));
-}
 
-function updateCityContainer(inputText) {
-    const cityContainer = document.getElementById('cityContainer');
-    cityContainer.innerHTML = '';
 
-    if (inputText.trim() === '') {
-        cityContainer.style.display = 'block';
-        return;
-    }
-
-    const filteredCities = belarusCities.filter(city => city.toLowerCase().includes(inputText.toLowerCase()));
-    filteredCities.forEach(city => {
-        const cityItem = document.createElement('div');            
-        const form_radio1 = document.getElementById('form_radio1');
-        const form_radio2 = document.getElementById('form_radio2');
-        cityItem.classList.add('city_item');
-        cityItem.textContent = city;
-
-        cityItem.addEventListener('click', function() {
-            document.getElementById('cityInput').value = city;
-            form_radio1.style.display = 'block';
-            form_radio2.style.display = 'block';
-            cityContainer.style.display = 'none';
-
-        });
-        cityContainer.appendChild(cityItem);
-    });
-
-    if (filteredCities.length > 0) {
-        cityContainer.style.display = 'block';
-        
-    } else {
-        cityContainer.style.display = 'none';
-    }
-}
-
-loadBelarusCities();
-
-cityInput.addEventListener('input', function() {
-    updateCityContainer(this.value);
-});
-//---------------------------------------------- city list end
 //---------------------------------------------- input city
+
 cityInput.addEventListener('input', function() {
     const enteredCity = this.value.trim();
     const foundCity = belarusCities.find(city => city.toLowerCase() === enteredCity.toLowerCase());
@@ -430,3 +342,5 @@ cityInput.addEventListener('input', function() {
     }
 });
 //---------------------------------------------- input city end
+
+

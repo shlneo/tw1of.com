@@ -1,50 +1,54 @@
 {% extends "base.html" %}
-{% block title %}Cart{% endblock %}
 {% block content %}
 <div class = "basket_main_contener"> 
-    <div class = "basket_products_cont" style = "">
+    <div class = "basket_products_cont">
         <div class = "product_name_text">Cart</div>
         <hr> 
-        {% if items %}
+        {% if cart %}
         <ul class="list_group">
-            {% for item in items %}
+            {% for item in cart %}
                 <li class="list_group_product">
                     <div class="cont_cards_tovari">
                         <div class="info_cont_about_tavar">
-                            <img src="{{ url_for('static', filename='img/' + item.tovar.img_name + '.png') }}" alt="{{ item.tovar_name }}">
+                            <img src="{{ url_for('static', filename='img/' + item.img_name + '.png') }}" alt="{{ item.tovar_name }}">
                             <div class="pr_name_tovar">
                                 <div>{{ item.tovar_name }}</div>
-                                <input id="price-{{ item.id }}" type="text" value="{{ item.price }}$" readonly>         
+                                <input type="text" id="price-{{ item.tovar_name }}" value="{{ item.price }}$" readonly>         
                             </div>
                         </div>
                         <div class="cont_regstr_count">
-                            <button type="button" onClick="decreaseQuantity({{ item.id }})" class="busket_button_minus">-</button>
-                            <input id="kol-{{ item.id }}" type="text" value="{{ item.quantity }}" readonly>         
-                            <button type="button" onClick="increaseQuantity({{ item.id }})" class="busket_button_plus">+</button>
+                
+        
+                            <button type="button" class="busket_button_minus" data-id="{{ item.tovar_name }}">-</button>
+                            <input type="text" id="item-quantity-{{ item.tovar_name }}" value="{{ item.quantity }}" readonly>  
+                            <button type="button" class="busket_button_plus" data-id="{{ item.tovar_name }}">+</button>
+
                         </div> 
-                        <button class="busket_delete_button" type="button" onClick="deleteItem({{ item.id }})">×</button>
+                        <button class="busket_delete_button" type="button">×</button>
                     </div>  
                 </li>
                 <hr>
             {% endfor %}
         </ul> 
         {% else %}
-        <div class = "no_orders_cont">
-            <p class = "no_orders_text">CART IS EMPTY</p>
-            <p>add the product to the cart</p>
-        </div>  
+            <div class="no_orders_cont">
+                <p class="no_orders_text">CART IS EMPTY</p>
+                <p>add the product to the cart</p>
+            </div>  
         {% endif %}
     </div>
-    <div class = "create_order_cont" style = "">
+    <div class = "create_order_cont">
         <div class = "product_name_text">Making an order</div>
         <hr>
         <form method="POST">
             <div class="cont_order">
                 <div class="name">Contact information</div>
+                <div class="podname">Email</div>
+                <input type="text" id="email" name="email" placeholder = "delovoytw1@gmail.com" required/>
                 <div class="podname">Telephone</div>
-                <input type="text" id="telephone" name="telephone" placeholder = "+375" class = "numeric-plus-only" required/>
+                <input type="text" id="telephone" name="telephone" placeholder = "+375.." class = "numeric-plus-only" required/>
                 <div class="podname">Recipient (full name)</div>
-                <input type="text" id="fio" name="fio" class = "english-only" placeholder = "Sidorov Maxim Andreevich" required/>
+                <input type="text" id="fio" name="fio" class = "english-only" placeholder = "Ivanov Ivan Ivanovich" required/>
             </div>
             <div class="cont_order">
                 <div class="name">Delivery</div>
@@ -75,7 +79,7 @@
                     <input type="text" id="country" name="country" class = "english-only" placeholder = "Country of residence"/>
                 </div>
                 <div class="order_receiving_point">
-                    <div class="podname">Receiving point</div>
+                    <div class="podname">Receiving point №</div>
                     <input type="text" id="receiving_point" name="receiving_point" placeholder = "Choose point" readonly/>
                     <div class = "cont_receiving_point">
                         {% for item in point %}
@@ -104,15 +108,31 @@
                 <input type="text" id="promocode" name="promocode" placeholder="If available" class = "numeric-eng"/>
             </div>
             <div class="total_cost_cont">
-                <div><span>The amount: </span>{{all_cart_price}}$</div>
-                <div class = "dbE"><span>Delivery across the RB to the branch (Evropochta): </span>2,5$</div>
-                <div class = "ddE"><span>Door-to-door delivery in the RB (Evropochta): </span>4,5$</div>
-                <div class = "wws"><span>World wide shipping: </span>7,5$</div>
-                <div class = "ttam_dbE"><span>The total amount: </span>{{ttam_dbE}}$</div>
-                <div class = "ttam_ddE"><span>The total amount: </span>{{ttam_ddE}}$</div>
-                <div class = "ttam_wws"><span>The total amount: </span>{{ttam_wws}}$</div>
+
+                <div><span>The amount: </span><a id="total-price">{{ total_price }}$</a></div>
+
+                <div class="dbE">
+                    <span>Delivery across the RB to the branch (Evropochta): </span>2.5$
+                </div>
+                <div class="ddE">
+                    <span>Door-to-door delivery in the RB (Evropochta): </span>4.5$
+                </div>
+                <div class="wws">
+                    <span>World wide shipping: </span>7.5$
+                </div>
+                
+                <div class="ttam_dbE">
+                    <span>The total amount: </span><a id="total-price-dbE">{{ total_price_dbE }}$</a>
+                </div>
+                <div class="ttam_ddE">
+                    <span>The total amount: </span><a id="total-price-ddE">{{ total_price_ddE }}$</a>
+                </div>
+                <div class="ttam_wws">
+                    <span>The total amount: </span><a id="total-price-wws">{{ total_price_wws }}$</a>
+                </div>
+
             </div>
-            {% for item in items %}
+            {% for item in cart %}
                 <input type="hidden" id="tovar_name" name="tovar_name" value="{{ item.tovar_name }}">
                 <input type="hidden" id="tovar_quantity" name="tovar_quantity" value="{{ item.quantity }}">
             {% endfor %}
@@ -124,5 +144,105 @@
         </form>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const updateQuantity = (tovarName, newQuantity) => {
+        fetch('/update_cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                tovar_name: tovarName,
+                quantity: newQuantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const quantityInput = document.getElementById(`item-quantity-${tovarName}`);
+                const priceInput = document.getElementById(`price-${tovarName}`);
+                quantityInput.value = newQuantity;
+                priceInput.value = `${(data.cart.find(item => item.tovar_name === tovarName).price).toFixed(2)}$`;
+
+                const totalPriceElement = document.getElementById('total-price');
+                const totalPricedbE = document.getElementById('total-price-dbE');
+                const totalPriceddE = document.getElementById('total-price-ddE');
+                const totalPricewws = document.getElementById('total-price-wws');
+                const totalQuantityElement = document.getElementById('total-quantity');
+
+                totalPriceElement.textContent = `${data.total_price}$`;
+                totalPricedbE.textContent = `${data.total_price_dbE}$`;
+                totalPriceddE.textContent = `${data.total_price_ddE}$`;
+                totalPricewws.textContent = `${data.total_price_wws}$`;
+                totalQuantityElement.textContent = data.total_quantity;
+            } else {
+                console.error('Ошибка обновления корзины:', data.error);
+            }
+        });
+    };
+
+    // Обработчики для изменения количества
+    document.querySelectorAll('.busket_button_minus').forEach(button => {
+        button.addEventListener('click', () => {
+            const tovarName = button.getAttribute('data-id');
+            const input = document.getElementById(`item-quantity-${tovarName}`);
+            const newQuantity = Math.max(parseInt(input.value) - 1, 1); // Минимум 1
+            input.value = newQuantity;
+            updateQuantity(tovarName, newQuantity);
+        });
+    });
+
+    document.querySelectorAll('.busket_button_plus').forEach(button => {
+        button.addEventListener('click', () => {
+            const tovarName = button.getAttribute('data-id');
+            const input = document.getElementById(`item-quantity-${tovarName}`);
+            const newQuantity = parseInt(input.value) + 1;
+            input.value = newQuantity;
+            updateQuantity(tovarName, newQuantity);
+        });
+    });
+
+    // Обработчик для удаления товара из корзины
+    document.querySelectorAll('.busket_delete_button').forEach(button => {
+        button.addEventListener('click', () => {
+            const tovarName = button.closest('li').querySelector('.busket_button_minus').getAttribute('data-id');
+            
+            fetch('/remove_item', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tovar_name: tovarName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Удаляем товар из DOM
+                    const itemElement = button.closest('li');
+                    itemElement.remove();
+
+                    // Обновляем общую информацию о корзине
+                    const totalPriceElement = document.getElementById('total-price');
+                    const totalPricedbE = document.getElementById('total-price-dbE');
+                    const totalPriceddE = document.getElementById('total-price-ddE');
+                    const totalPricewws = document.getElementById('total-price-wws');
+                    const totalQuantityElement = document.getElementById('total-quantity');
+
+                    totalPriceElement.textContent = `${data.total_price}$`;
+                    totalPricedbE.textContent = `${data.total_price_dbE}$`;
+                    totalPriceddE.textContent = `${data.total_price_ddE}$`;
+                    totalPricewws.textContent = `${data.total_price_wws}$`;
+                    totalQuantityElement.textContent = data.total_quantity;
+                } else {
+                    console.error('Ошибка удаления товара:', data.error);
+                }
+            });
+        });
+    });
+});
+
+    </script>
+    
 {% endblock %}
 

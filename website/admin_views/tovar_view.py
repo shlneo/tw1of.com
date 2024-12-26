@@ -1,7 +1,4 @@
 import os
-from flask import url_for
-from markupsafe import Markup
-from flask_admin import form
 from flask_admin.contrib.sqla import ModelView
 from wtforms import validators
 
@@ -21,11 +18,10 @@ class TovarView(ModelView):
         'material': 'Material',
         'base': 'Base',
         'info': 'Info',
-        'sklad_id': 'Sklad_id',
     }
-    column_list = ['id', 'type', 'name', 'count', 'cost', 'status', 'color', 'size', 'material', 'base', 'info', 'img_name','sklad_id']
+    column_list = ['id', 'type', 'name', 'count', 'cost', 'status', 'color', 'size', 'material', 'base', 'info', 'img_name',]
     column_default_sort = ('id', True)
-    column_sortable_list = ['id', 'type', 'name', 'count', 'cost', 'status', 'color', 'size', 'material', 'base', 'info', 'img_name','sklad_id']
+    column_sortable_list = ['id', 'type', 'name', 'count', 'cost', 'status', 'color', 'size', 'material', 'base', 'info', 'img_name']
 
     can_create = True
     can_edit = True

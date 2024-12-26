@@ -1,159 +1,191 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, json
-import re
-from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User, Tovar, Sklad, Cart, Order, Comment, Message, Point
+from .models import Tovar, Order, Point
+import requests
 from . import db
-from flask_login import login_user, logout_user, current_user, LoginManager, login_required
+from user_agents import parse
 from sqlalchemy import func
 import smtplib
 from email.mime.multipart  import MIMEMultipart
 from email.mime.text import MIMEText
-import re
-from apscheduler.schedulers.background import BackgroundScheduler
-from datetime import datetime, timedelta
+from flask import session
 
 auth = Blueprint('auth', __name__)
-login_manager = LoginManager()
 
-@login_manager.user_loader
-def load_user(id):
-    return User.query.get(int(id))
+def get_location_info(user_agent_string):
+    try:
+        ip_response = requests.get("https://api64.ipify.org?format=json")
+        ip_response.raise_for_status()
+        ip_address = ip_response.json().get("ip")
 
-@auth.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = str(request.form.get('password'))
-        remember = True if request.form.get('remember') else False 
-        user = User.query.filter(func.lower(User.email) == func.lower(email)).first()
-        if user:    
-            if check_password_hash(user.password, password):
-                flash('Authorization was successful', category='success')
-                login_user(user, remember=remember) 
-                return redirect(url_for('views.catalog'))
-            else:
-                flash('Incorrect password', category='error')
-                return redirect(url_for('auth.login'))
-        else:
-            flash('There is no user with this email address', category='error')
-            return redirect(url_for('auth.login')) 
-    return render_template("login.html", user=current_user)
+        location_response = requests.get(f"https://ipinfo.io/{ip_address}/json")
+        location_response.raise_for_status()
+        location_data = location_response.json()
 
-@auth.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    flash('Logged out successfstrly', category='success')
-    return redirect(url_for('auth.login'))
+        user_agent = parse(user_agent_string)
+        browser = user_agent.browser.family 
+        os = user_agent.os.family
+        
+        location = location_data.get("city", "None") + ", " + location_data.get("region", "None") + ", " + location_data.get("country", "None")
+        ip_address_str = ip_address if ip_address else "None"
 
-@auth.route('/sign_up', methods=['GET', 'POST'])
-def sign():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        nickname = request.form.get('nickname')
-        password1 = request.form.get('password1')
-        password2 = request.form.get('password2')
-        user = User.query.filter_by(email=email).first()
-        if user:
-            flash('A user with this email already exists', category='error')
-        elif not re.match(r'[\w\.-]+@[\w\.-]+', email):
-            flash('Invalid email address', category='error')
-        elif password1!=password2:
-            flash('An error occurred in confirming the password', category='error')
-        else:
-            new_user = User(email=email, nickname=nickname, password=generate_password_hash(password2))
-            new_user = User(email=email, nickname=nickname, password=generate_password_hash(password1))
-            db.session.add(new_user)
-            db.session.commit()
-            login_user(new_user, remember=True)
-            flash('The account has been created', category='success')
-            return redirect(url_for('views.catalog'))
-    return render_template("sign_up.html", user=current_user)
+        return ip_address_str, location, os, browser
 
-@auth.route('/forgot_password', methods=['POST'])
-def forgot_password():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        user = User.query.filter_by(email=email).first()
-        if user:
-            send_email(f'Your new password is {gener_password()}, if desired, you can change it in your profile settings', email)   
-            user.password = generate_password_hash(gener_password())
-            db.session.commit()
-            flash('A new password has been sent to your email', category='success')
-            return redirect(url_for('views.login'))
-        else:
-            flash('There is no user with this email address', category='error')
-            return redirect(url_for('views.login'))
-    return render_template("login.html", user=current_user)
+    except Exception as e:
+        print(f"Error when receiving location data: {e}")
+        return "None", "None", "None", "None"
 
-def send_email(message_body, recipient_email):
+def send_email(message_body, recipient_email, location=None, device=None, browser=None, ip_address=None):
     smtp_server = 'smtp.mail.ru'
-    smtp_port = 587 
-    email_address = 'tw1.ofcompay@mail.ru'  
-    email_password = '6McTMF3uX2chGcFchUmZ'
-    message = MIMEMultipart()
+    smtp_port = 587
+    email_address = 'tw1.ofcompay@mail.ru'
+    email_password = ''
+
+    base_styles = """
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f3f3f3; margin: 0; padding: 0; }
+        .email-container { max-width: 600px; margin: 20px auto; background-color: #fff; border-radius: 8px; 
+                           overflow: hidden; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); }
+        .header { background-color: #f3f3f3; text-align: center; padding: 20px; }
+        .header a { font-size: 32px; font-weight: bold; padding: 15px; margin: 5px 0; }
+        .content { padding: 20px; color: #333; }
+        .info { background-color: #f9f9f9; padding: 15px; border-left: 4px solid #028dff; margin: 20px 0; 
+                border-radius: 4px; }
+        .code { text-align: center; font-size: 32px; font-weight: bold; background-color: #f9f9f9; padding: 15px; 
+                border: 1px solid #ddd; border-radius: 5px; margin: 20px 0; }
+        .footer { background-color: #f3f3f3; padding: 10px; text-align: center; font-size: 12px; color: #777; }
+        .footer a { color: #6441a5; text-decoration: none; }
+    </style>
+    """
+    content = f"""
+        <p>Hello</p>
+        <p>Thank you for your order.</p>
+        <div class="info">
+            {f'<p><strong>Location:</strong> {location}</p>' if location else ''}
+            {f'<p><strong>Device:</strong> {device}</p>' if device else ''}
+            {f'<p><strong>Browser:</strong> {browser}</p>' if browser else ''}
+            {f'<p><strong>IP-address:</strong> {ip_address}</p>' if ip_address else ''}
+        </div>
+        <p>Your purchases:</p>
+        <div class="code">{message_body}</div>
+        <p>Если код не применяется, запросите новый код подтверждения и попробуйте выполнить следующие действия для решения проблемы:</p>
+        <ul>
+            <li>Используйте режим инкогнито или другой браузер</li>
+            <li>Очистите кэш вашего браузера и удалите файлы cookie</li>
+            <li>Убедитесь, что браузер обновлен до последней версии</li>
+        </ul>
+    """
+
+    html_template = f"""
+    <!DOCTYPE html>
+
+    <html lang="en">
+    <head>{base_styles}</head>
+    <body>
+        <div class="email-container">
+            <div class="header"><a>Erespondent-Online</a></div>
+            <div class="content">
+                {content}
+            </div>
+            <div class="footer">
+                <p>Additional information can be found <a href="#">here</a>.</p>
+                <p>Thanks,<br>Support Service Tw1ofShop</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+    message = MIMEMultipart("alternative")
     message['From'] = email_address
     message['To'] = recipient_email
-    message['Subject'] = 'Message for user'
-    message.attach(MIMEText(message_body, 'plain'))
-    server = smtplib.SMTP(smtp_server, smtp_port)
-    server.starttls() 
-    server.login(email_address, email_password)
-    server.send_message(message)
-    server.quit()
+    message['Subject'] = 'Order Notification'
+    message.attach(MIMEText(html_template, 'html'))
 
-def gener_password():
-    password = '1111'
-    return password
-
-@auth.route('/account', methods=['GET', 'POST'])
-@login_required
-def account():
-        return render_template("account.html", user=current_user)
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(email_address, email_password)
+        server.send_message(message)
+        print("The email was sent successfully")
+    except Exception as e:
+        print(f"Error when sending an email: {e}")
+    finally:
+        server.quit()
 
 @auth.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
-    if current_user.is_authenticated:
-        tovar_name = request.form.get('tovar_name')
-        user_email = current_user.email
-        quantity = int(request.form.get('tovar_count'))
-        price = float(request.form.get('tovar_cost'))
-        existing_item = Cart.query.filter_by(user_email=user_email, tovar_name=tovar_name).first()
-        tovar = Tovar.query.filter_by(name=tovar_name).first()
-        if tovar.count <= 0:
-            flash(f'No in stoke {tovar_name} mat', category='error')
-            return redirect(url_for('views.product', name=tovar_name))
+    tovar_name = request.form.get('tovar_name')
+    quantity = int(request.form.get('tovar_count'))
+    price = float(request.form.get('tovar_cost'))
+
+    tovar = Tovar.query.filter_by(name=tovar_name).first()
+    if not tovar or tovar.count <= 0:
+        flash(f'Нет в наличии {tovar_name}', category='error')
+        return redirect(url_for('views.product', name=tovar_name))
+
+    if 'cart' not in session:
+        session['cart'] = []
+        session['total_price'] = 0  
+        session['total_quantity'] = 0  
+        session['total_price_dbE'] = 0 
+        session['total_price_ddE'] = 0 
+        session['total_price_wws'] = 0 
+
+    cart = session['cart']
+    existing_item = next((item for item in cart if item['tovar_name'] == tovar_name), None)
+
+    if existing_item:
+        if existing_item['quantity'] + quantity <= tovar.count:
+            existing_item['quantity'] += quantity
+            existing_item['price'] = existing_item['quantity'] * existing_item['price_per_unit']
         else:
-            if existing_item:
-                if existing_item.quantity + quantity <= tovar.count: 
-                    existing_item.quantity += quantity
-                    existing_item.price += float(price)
-                else:
-                    flash(f'Count of {tovar_name} mat is less than required', category='error')
-                    return redirect(url_for('views.product', name=tovar_name))
-            else:
-                new_item = Cart(
-                    user_email=user_email, 
-                    tovar_name=tovar_name, 
-                    quantity=quantity, 
-                    price=price)
-                db.session.add(new_item)
-            db.session.commit()
-            flash('Tovar added to cart', category='success')
+            flash(f'Not enough {tovar_name} in stock', category='error')
             return redirect(url_for('views.product', name=tovar_name))
     else:
-        flash('Need to authenticate', category='error')
-        return redirect(url_for('views.catalog'))
+        if quantity <= tovar.count:
+            cart.append({
+                'tovar_name': tovar_name,
+                'quantity': quantity,
+                'price': round(price, 2),
+                'price_per_unit': round(price / quantity, 2),
+                'img_name': tovar.img_name
+            })
+        else:
+            flash(f'Недостаточно {tovar_name} на складе', category='error')
+            return redirect(url_for('views.product', name=tovar_name))
 
+    # Recalculating the total amount and the total amount
+    total_price = sum(item['price'] for item in cart)
+    total_quantity = sum(item['quantity'] for item in cart)
+
+    session['cart'] = cart
+    session['total_price'] = round(total_price, 2)  
+    session['total_price_dbE'] = round(session['total_price'] + 2.50, 2)  
+    session['total_price_ddE'] = round(session['total_price'] + 4.50, 2)  
+    session['total_price_wws'] = round(session['total_price'] + 7.50, 2)  
+    
+    session['total_quantity'] = total_quantity 
+
+    session.modified = True
+
+    flash('The product has been added to the cart', category='success')
+    return redirect(url_for('views.product', name=tovar_name))
 
 @auth.route('/cart', methods=['GET', 'POST'])
 def createorder():
     if request.method == 'POST': 
-        items = Cart.query.filter_by(user_email=current_user.email).all()
-        all_cart_price = round(sum(item.price for item in items), 2)
-        type = ''        
+        if 'cart' not in session or not session['cart']:
+            flash('Your cart is empty. Add items to your cart before placing an order.', category='error')
+            return redirect(url_for('views.cart'))
+
+        items = session['cart']
+        # all_cart_price = round(sum(item['price'] * item['quantity'] for item in items), 2)
+
+
         max_nomerzakaza = db.session.query(func.max(Order.nomerzakaza)).scalar()
         nomerzakaza = max_nomerzakaza + 1 if max_nomerzakaza is not None else 1  
+
+        email = request.form.get('email')
         fio = request.form.get('fio')
         telephone = request.form.get('telephone')
         receiving_point = request.form.get('receiving_point')
@@ -165,137 +197,143 @@ def createorder():
         comment = request.form.get('comment')
         promocod = request.form.get('promocod')
 
-        cart_items = Cart.query.filter_by(user_email=current_user.email).all()
-        if cart_items:
-            if receiving_point:
-                type = 'Delivery across the RB to the branch (Evropochta)' 
-                current_point = Point.query.filter_by(number=receiving_point).first()
-                current_point = current_point.id
-                all_cart_price = round(all_cart_price + 2.5, 2)
-            elif country and city:
-                type =  'Worldwide shipping'  
-                current_point = None
-                all_cart_price = round(all_cart_price + 7.5, 2)
-            else:
-                type = "Door-to-door delivery in the RB (Evropochta)"
-                current_point = None
-                all_cart_price = round(all_cart_price + 4.5, 2)
-            if country == '':
-                country = 'Belarus'
-            for item in cart_items:
-                new_order = Order(nomerzakaza=nomerzakaza, 
-                                type = type,
-                                fio=fio, 
-                                email=current_user.email, 
-                                telephone=telephone, 
-                                receiving_point=current_point,
-                                street=street,
-                                house=house,
-                                flat=flat,
-                                city=city, 
-                                country=country, 
-                                comment=comment, 
-                                promocod=promocod,             
-                                price = item.price, 
-                                tovar_name=item.tovar_name, 
-                                tovar_quantity=item.quantity
-                                )
-                db.session.add(new_order)
-                tovar = Tovar.query.filter_by(name=item.tovar_name).first()
-                if tovar:
-                    tovar.count -= item.quantity
-                    Cart.query.filter_by(user_email=current_user.email).delete()
-                    db.session.commit()          
-            current_tovar = Tovar.query.filter_by(name=item.tovar_name).all() 
-            for i in current_tovar:
-                if i.count == 0:
-                    i.status = "Sold"
-                    db.session.commit()        
-            new_massage = Message(
-                text = f"The order №{new_order.nomerzakaza} has been added to the processing",
-                user_email = current_user.email, 
-                category = True,
+        if receiving_point:
+            type = 'Delivery across the RB to the branch (Evropochta)' 
+            current_point = Point.query.filter_by(number=receiving_point).first()
+            current_point_id = current_point.id if current_point else None
+            # all_cart_price = session.get('total_price_dbE', 0) 
+        elif country != 'Belarus' or city:
+            type =  'Worldwide shipping'  
+            current_point_id = None
+            # all_cart_price = session.get('total_price_ddE', 0) 
+        else:
+            type = "Door-to-door delivery in the RB (Evropochta)"
+            current_point_id = None
+            # all_cart_price = session.get('total_price_wws', 0) 
+
+        for item in items:
+            new_order = Order(
+                nomerzakaza=nomerzakaza, 
+                type=type,
+                fio=fio,  
+                email = email,
+                telephone=telephone, 
+                receiving_point=current_point_id,
+                street=street,
+                house=house,
+                flat=flat,
+                city=city, 
+                country=country, 
+                comment=comment, 
+                promocod=promocod,             
+                price=item['price'], 
+                tovar_name=item['tovar_name'], 
+                tovar_quantity=item['quantity']
             )
-            db.session.add(new_massage)
-            db.session.commit()
-            flash('Order added!', category='success')
-            return redirect(url_for('views.profile_orders'))
-        else:
-            flash('Add items in Cart')
-    return render_template("cart.html", user=current_user)
+            db.session.add(new_order)
 
-@auth.route('/add_comment', methods=['POST'])
-def add_comment():
-    if request.method == 'POST':
-        tovar_id = request.form.get('tovar_id')
-        text = request.form.get('text')
-        name_tovar = Tovar.query.filter_by(id=tovar_id).first()
-        if current_user.is_authenticated:    
-            if tovar_id and text:
-                user_id = current_user.id
-                new_comment = Comment(text=text, user_id=user_id, tovar_id=tovar_id)
-                db.session.add(new_comment)
+            tovar = Tovar.query.filter_by(name=item['tovar_name']).first()
+            if tovar:
+                tovar.count -= item['quantity']
+                if tovar.count <= 0:
+                    tovar.count = 0
+                    tovar.status = "Sold"
                 db.session.commit()
-                flash("The comment has been added successfully", category='success')
-                return redirect(url_for('views.product', name=name_tovar.name))
-            else:
-                flash("Error: there is not enough data to add a comment", category='error')
-                return redirect(url_for('views.product', name=name_tovar.name))
-        else:      
-            flash("Need to login", category='error')        
-            return redirect(url_for('views.product', name=name_tovar.name))
-    else:
-        flash("Error: Invalid request method", category='error')
-        return redirect(url_for('views.product', name=name_tovar.name))
-      
-@auth.route('/profile/password', methods=['POST'])
-def change_password():
-    if request.method == 'POST':
-        old_password = request.form.get('old_password')
-        new_password = request.form.get('new_password')
-        conf_new_password = request.form.get('conf_new_password')
-        if old_password and new_password and conf_new_password:
-            user = User.query.filter_by(email=current_user.email).first()
-            if not check_password_hash(current_user.password, old_password):
-                flash('Incorrect old password', category='error')
-                return redirect(url_for('views.profile_password'))
-            elif new_password != conf_new_password:
-                flash('An error occurred while confirming the password', category='error')
-                return redirect(url_for('views.profile_password'))
-            else:
-                user.password = generate_password_hash(conf_new_password)
-                db.session.commit()
-                flash('The password change was successful', category='success')
-                send_email(f'Your password has been changed to {conf_new_password}', current_user.email)
-                return redirect(url_for('views.login'))
-        else:
-            flash('Need to input your info')
-            return redirect(url_for('views.profile_password'))
 
-@auth.route('/profile/orders', methods=['POST'])
-@login_required
-def cancel_order():
-    if request.method == 'POST':
-        nomerzakaza = request.form.get('nomerzakaza')
-        current_order = Order.query.filter_by(nomerzakaza=nomerzakaza).all()
-        if not current_order:
-            flash('Order not found', category='error')
-            return redirect(url_for('views.profile_orders'))
-        else:
-            if current_order[0].status == 'Cancelled':
-                flash('The order is already cancelled', category='info')
-            elif current_order[0].status == 'In processing':
-                current_order[0].status = 'Cancelled'
-                order_items = Order.query.filter_by(nomerzakaza=nomerzakaza).all()
-                for item in order_items:
-                    tovar = Tovar.query.filter_by(name=item.tovar_name).first()
-                    if tovar:
-                        tovar.count += item.tovar_quantity
-                        tovar.status = "In stoke"
-                        db.session.commit()         
-                db.session.commit()
-                flash("Order status changed to Cancelled", category='success')
-            else:
-                flash("You cannot cancel this order because it has already been processed", category='error')
-            return redirect(url_for('views.profile_orders'))
-            
+        # Отправка уведомления
+        user_agent_string = request.headers.get('User-Agent')
+        ip_address, location, os, browser = get_location_info(user_agent_string)
+        
+        send_email('123', email, location=location, device=os, browser=browser, ip_address=ip_address)
+
+        # Очистка корзины
+        session.pop('cart', None)
+        session.pop('total_price', None)
+        session.pop('total_price_dbE', None)
+        session.pop('total_price_ddE', None)
+        session.pop('total_price_wws', None)
+        session.pop('total_quantity', None)
+
+        flash('Order created successfully!', category='success')
+    return redirect(url_for('views.cart'))
+
+
+@auth.route('/update_cart', methods=['POST'])
+def update_cart():
+    try:
+        data = request.get_json()
+        product_name = data.get('tovar_name')
+        new_quantity = data.get('quantity')
+
+        if not product_name or new_quantity is None:
+            return jsonify({'error': 'Invalid input'}), 400
+        
+        session_cart = session.get('cart', [])
+        for item in session_cart:
+            if item['tovar_name'] == product_name:
+                item['quantity'] = new_quantity
+                item['price'] = round(item['price_per_unit'] * new_quantity, 2)  # Ограничиваем 2 знаками после запятой
+                break
+
+        total_price = sum(item['price'] for item in session_cart)
+        total_quantity = sum(item['quantity'] for item in session_cart)
+
+        session['cart'] = session_cart
+        session['total_price'] = round(total_price, 2)
+        session['total_price_dbE'] = round(total_price + 2.50, 2)  
+        session['total_price_ddE'] = round(total_price + 4.50, 2)  
+        session['total_price_wws'] = round(total_price + 7.50, 2)  
+        session['total_quantity'] = total_quantity
+        session.modified = True
+
+        return jsonify({
+            'success': True,
+            'cart': session_cart,
+            'total_price': session['total_price'],
+            'total_quantity': session['total_quantity'],
+            'total_price_dbE': session['total_price_dbE'],
+            'total_price_ddE': session['total_price_ddE'],
+            'total_price_wws': session['total_price_wws']
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+@auth.route('/remove_item', methods=['POST'])
+def remove_item():
+    try:
+        data = request.get_json()  # Получаем данные из запроса
+        product_name = data.get('tovar_name')
+
+        if not product_name:
+            return jsonify({'error': 'Invalid input'}), 400
+
+        # Обновляем корзину: удаляем товар по имени
+        session_cart = session.get('cart', [])
+        session_cart = [item for item in session_cart if item['tovar_name'] != product_name]
+
+        # Пересчитываем общую сумму и количество
+        total_price = sum(item['price'] for item in session_cart)
+        total_quantity = sum(item['quantity'] for item in session_cart)
+
+        # Обновляем сессию с новыми значениями
+        session['cart'] = session_cart
+        session['total_price'] = round(total_price, 2)
+        session['total_price_dbE'] = round(total_price + 2.50, 2)  
+        session['total_price_ddE'] = round(total_price + 4.50, 2)  
+        session['total_price_wws'] = round(total_price + 7.50, 2) 
+
+        session['total_quantity'] = total_quantity
+
+        session.modified = True
+
+        return jsonify({
+            'success': True,
+            'cart': session_cart,
+            'total_price': session['total_price'],
+            'total_quantity': session['total_quantity'],
+            'total_price_dbE': session['total_price_dbE'],
+            'total_price_ddE': session['total_price_ddE'],
+            'total_price_wws': session['total_price_wws']
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

@@ -6,10 +6,11 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"/>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/adaptiv.css') }}">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.png')}}">
-    <title>{% block title %}Base{% endblock %}</title>
+
+    <!-- <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.png')}}"> -->
+    <title>{% block title %}Tw1Shop{% endblock %}</title>
   </head>
+  
   <body>
     <header class="fixed-header">
       <div class="header-content">
@@ -22,7 +23,7 @@
                           </a>
                       </li> 
                       <li onclick="window.location.href='/'"> 
-                          <img id="logo" src="{{ url_for('static', filename='img/logo.png')}}" alt="logo">
+                          <a class="menu_name">Tw1 Shop</a>
                       </li>
                   </ul>
                 </nav>
@@ -30,14 +31,7 @@
             <div class="center-content dropdown-content">
               <nav>
                   <ul>    
-                      <li onclick="window.location.href='/account'">
-                          {% if user.is_authenticated %}
-                              <a>{{ user.nickname }}</a> 
-                          {% else %}
-                              <a>Account</a> 
-                          {% endif %}
-                      </li>
-                      <li id="catalogLink">
+                      <li onclick="window.location.href='/'"> 
                           <a>Catalog</a>
                       </li>
                       <li>
@@ -55,11 +49,11 @@
                       <li onclick="window.location.href='/cart'">
                           <div class="count_cont">
                               <img src="{{ url_for('static', filename='img/cart.png')}}" alt="Cart" class="cart-image">
-                              {% if items_cart %}
-                                  <div class="item_count">{{ items_cart }}</div>
+                              {% if total_quantity %}
+                                  <div class="item_count" id="total-quantity">{{ total_quantity }}</div>
                               {% endif %}
                           </div>
-                      </li>
+                      </li>  
                   </ul>
               </nav>
           </div>
@@ -96,7 +90,7 @@
           <a href="https://www.youtube.com/channel/UCBsJKKsALtclr1GFcGkJn2A" target="_blank">
             <img src="{{ url_for('static', filename='img/youtube.png')}}" alt="">
           </a>
-          <a href="https://www.twitch.tv/mr_tw1" target="_blank">
+          <a href="https://www.twitch.tv/tw1of" target="_blank">
             <img src="{{ url_for('static', filename='img/twitch.png')}}" alt="">
           </a>
         </div>
