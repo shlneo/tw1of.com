@@ -1,4 +1,5 @@
 Personal website for the sale of merch
+run > py main.py
 
 ![image](https://github.com/user-attachments/assets/3aa5fdb8-6a2a-4a3a-bd44-21d3d0c52ed0)
 ![image](https://github.com/user-attachments/assets/9518ad43-f145-477b-978e-4df55a1bf071)
