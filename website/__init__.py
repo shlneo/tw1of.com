@@ -5,7 +5,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_babel import Babel
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
-from flask_wtf.csrf import CSRFProtect
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
@@ -19,20 +18,21 @@ def create_app():
 
     app.config['SECRET_KEY'] = 'anykd2424fdf1'
     app.config['SESSION_TYPE'] = 'filesystem'
-    app.config['SESSION_COOKIE_SECURE'] = True  # Только через HTTPS
-    app.config['SESSION_COOKIE_HTTPONLY'] = True  # Защита от JavaScript-доступа
-    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'  # Защита от CSRF
+    app.config['SESSION_COOKIE_SECURE'] = True  
+    app.config['SESSION_COOKIE_HTTPONLY'] = True  
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
-     
     app.config['FLASK_ADMIN_SWATCH'] = 'cosmo'
     app.config['BABEL_DEFAULT_LOCALE'] = 'eng'
+
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{path.join(path.dirname(__file__), DB_NAME)}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
+
     db.init_app(app)
     babel.init_app(app)
     bcrypt.init_app(app)
     migrate.init_app(app, db, render_as_batch=True)
-    # csrf = CSRFProtect(app)
+
     from .views import views
     from .auth import auth
     app.register_blueprint(views, url_prefix='/')
@@ -49,7 +49,7 @@ def create_app():
     from website.admin_views.image_view import ImageView
     from website.admin_views.video_view import VideoView
     
-    admin = Admin(app, 'Tw1_comp', index_view=MyMainView(), template_mode='bootstrap4', url='/')
+    admin = Admin(app, 'Tw1_comp', index_view=MyMainView(), template_mode='bootstrap5', url='/')
     admin.add_view(TovarView(Tovar, db.session))
     admin.add_view(OrderView(Order, db.session))
     admin.add_view(PointView(Point, db.session))
