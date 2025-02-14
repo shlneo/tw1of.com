@@ -1,6 +1,6 @@
 from sqlalchemy import event
 from . import db
-from sqlalchemy import DateTime, Boolean
+from sqlalchemy import DateTime
 from datetime import datetime
 
 class Tovar(db.Model):

@@ -90,11 +90,6 @@ def offer():
     total_quantity = get_items_cart()
     return render_template('offer.html', total_quantity=total_quantity)
 
-@views.route('/karta')
-def karta():
-    total_quantity = get_items_cart()
-    return render_template('karta.html', total_quantity=total_quantity)
-
 class MyMainView(AdminIndexView):
     @expose('/')
     def admin_stats(self):
