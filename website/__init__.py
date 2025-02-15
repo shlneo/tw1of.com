@@ -48,7 +48,7 @@ def create_app():
     from website.admin_views.point_view import PointView
     from website.admin_views.image_view import ImageView
     from website.admin_views.video_view import VideoView
-    
+
     admin = Admin(app, 'Tw1_comp', index_view=MyMainView(), template_mode='bootstrap5', url='/')
     admin.add_view(TovarView(Tovar, db.session))
     admin.add_view(OrderView(Order, db.session))

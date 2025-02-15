@@ -1,31 +1,31 @@
-{% extends 'admin/master.html' %}
-{% block body %}
-<div class="container" style = "padding-top: 30px;">
-    <table class="table">
-        <tbody>
-            <tr>
-                <td>number of tovars</td>
-                <td>{{ tovar_data }}</td>
-            </tr>
-            <tr>
-                <td>number of orders</td>
-                <td>{{ order_data }}</td>
-            </tr>
-            <tr>
-                <td>number of points</td>
-                <td>{{ point_data }}</td>
-            </tr>
-            <tr>
-                <td>number of vifeo file</td>
-                <td>{{ num_videos }}</td>
-            </tr>
-            <tr>
-                <td>number of img files</td>
-                <td>{{ num_images }}</td>
-            </tr>
-        </tbody>
-    </table>
-    <a href="{{ url_for('admin.backup_database') }}" class="btn btn-primary">Скачать резервную копию</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Stats</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Статистика</h1>
+    <p>Количество товаров: {{ tovar_data }}</p>
+    <p>Количество заказов: {{ order_data }}</p>
+    <p>Количество точек: {{ point_data }}</p>
+    
+    <h2>Изображения ({{ num_images }})</h2>
+    <ul>
+        {% for image in images %}
+            <li><img src="{{ image }}" alt="Image" style="width: 100px;"></li>
+        {% endfor %}
+    </ul>
 
-</div>
-{% endblock %}
+    <h2>Видео ({{ num_videos }})</h2>
+    <ul>
+        {% for video in videos %}
+            <li><video width="320" height="240" controls>
+                <source src="{{ video }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

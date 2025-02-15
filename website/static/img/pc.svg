@@ -1,0 +1,21 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M38 35V15C38 13.8954 37.1046 13 36 13H20.5H5C3.89543 13 3 13.8954 3 15V35C3 36.1046 3.89543 37 5 37H36C37.1046 37 38 36.1046 38 35Z" stroke="white" stroke-width="2" stroke-linecap="round"/>
+<path d="M59 2H43C41.8954 2 41 2.89543 41 4V60C41 61.1046 41.8954 62 43 62H59C60.1046 62 61 61.1046 61 60V4C61 2.89543 60.1046 2 59 2Z" stroke="white" stroke-width="2" stroke-linecap="round"/>
+<path d="M28 29.5V25.5C28 24.3954 27.1046 23.5 26 23.5H19H14C12.8954 23.5 12 24.3954 12 25.5V29.5C12 30.6046 12.8954 31.5 14 31.5H26C27.1046 31.5 28 30.6046 28 29.5Z" stroke="white" stroke-linecap="round"/>
+<path d="M59 2H43C41.8954 2 41 2.89543 41 4V60C41 61.1046 41.8954 62 43 62H59C60.1046 62 61 61.1046 61 60V4C61 2.89543 60.1046 2 59 2Z" stroke="white" stroke-linecap="round"/>
+<circle cx="51" cy="52" r="1.5" stroke="white"/>
+<circle cx="8" cy="18" r="2.5" stroke="white"/>
+<path d="M20.5 37V43M20.5 43H11.5M20.5 43H29.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+<path d="M44 47H58" stroke="white" stroke-width="2" stroke-linecap="round"/>
+<path d="M44 44H58" stroke="white" stroke-width="2" stroke-linecap="round"/>
+<path d="M44 41H58" stroke="white" stroke-width="2" stroke-linecap="round"/>
+<path d="M28 16L33 16" stroke="white" stroke-linecap="round"/>
+<path d="M5 35H10" stroke="white" stroke-linecap="round"/>
+<path d="M29 18H34" stroke="white" stroke-linecap="round"/>
+<path d="M30 20H35" stroke="white" stroke-linecap="round"/>
+<line x1="19" y1="23.5" x2="21" y2="23.5" stroke="white"/>
+<path d="M26 25H23.5M23 27H26" stroke="white" stroke-linecap="round"/>
+<path d="M46.0205 18.8549C46.8797 16.8357 47.9944 15.031 49.4554 13.4002C50.6086 12.1129 52.0858 11.1754 53.5313 10.2556" stroke="white" stroke-width="2" stroke-linecap="round"/>
+<path d="M48.4397 29.3714C48.659 25.2061 49.0621 20.8451 51.7369 17.5015" stroke="white" stroke-width="2" stroke-linecap="round"/>
+<path d="M52.7261 35.6361C53.7648 32.5811 54.045 29.312 54.045 26.0742" stroke="white" stroke-width="2" stroke-linecap="round"/>
+</svg>
