@@ -7,7 +7,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 
-    <!-- <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.png')}}"> -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.svg')}}">
     <title>{% block title %}Tw1{% endblock %}</title>
   </head>
   
@@ -22,8 +22,9 @@
                               <img src="{{ url_for('static', filename='img/menu.png')}}" alt="">
                           </a>
                       </li> 
-                      <li onclick="window.location.href='/'"> 
-                          <a class="menu_name">Tw1</a>
+                      <li class="logo_area" onclick="window.location.href='/'"> 
+                          <img src="{{ url_for('static', filename='img/logo.svg')}}" alt="logo">
+                     
                       </li>
                   </ul>
                 </nav>
@@ -34,7 +35,10 @@
                       <li onclick="window.location.href='/'"> 
                           Catalog
                       </li>
-                      <li onclick="window.open('https://t.me/+wyE9yJueXZw1ZmFi', '_blank')">
+                      <li onclick="window.location.href='/info'">
+                        Info
+                      </li>
+                      <li onclick="window.open('https://t.me/shin_7171', '_blank')">
                         Support
                       </li>
                       <li onclick="window.location.href='/faq'">
