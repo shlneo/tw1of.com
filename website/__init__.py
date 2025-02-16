@@ -5,6 +5,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_babel import Babel
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
+# from flask_script import Manager
+from flask import Flask, redirect, url_for, render_template
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_admin.contrib.sqla import ModelView
 
 db = SQLAlchemy()
 DB_NAME = "database.db"
@@ -15,47 +19,55 @@ bcrypt = Bcrypt()
 def create_app():
     app = Flask(__name__)
     app.config['FLASK_ENV'] = 'development'
-
     app.config['SECRET_KEY'] = 'anykd2424fdf1'
-    app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SESSION_COOKIE_SECURE'] = True  
-    app.config['SESSION_COOKIE_HTTPONLY'] = True  
-    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-
-    app.config['FLASK_ADMIN_SWATCH'] = 'cosmo'
-    app.config['BABEL_DEFAULT_LOCALE'] = 'eng'
-
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{path.join(path.dirname(__file__), DB_NAME)}'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
 
     db.init_app(app)
     babel.init_app(app)
     bcrypt.init_app(app)
     migrate.init_app(app, db, render_as_batch=True)
 
+    login_manager = LoginManager(app)
+    login_manager.login_view = 'login'  # Укажите маршрут для входа
+    
+    from .models import Tovar, Order, Point, User
+    
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
+
     from .views import views
     from .auth import auth
+
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
 
     with app.app_context():
         create_database(app)
 
-    from website.views import MyMainView
-    from .models import Tovar, Order, Point
+    from website.admin_views.user_view import UserView
     from website.admin_views.tovar_view import TovarView
     from website.admin_views.order_view import OrderView
     from website.admin_views.point_view import PointView
     from website.admin_views.image_view import ImageView
     from website.admin_views.video_view import VideoView
 
-    admin = Admin(app, 'Tw1_comp', index_view=MyMainView(), template_mode='bootstrap5', url='/')
+    admin = Admin(app, template_mode='bootstrap3')
+    
+    admin.add_view(UserView(User, db.session))
     admin.add_view(TovarView(Tovar, db.session))
     admin.add_view(OrderView(Order, db.session))
     admin.add_view(PointView(Point, db.session))
-    admin.add_view(ImageView())
-    admin.add_view(VideoView())
+    admin.add_view(ImageView())  
+    admin.add_view(VideoView()) 
+
     return app
+
+class MyModelView(ModelView):
+    # Убедитесь, что здесь нет ошибок в конфигурации
+    pass
 
 def create_database(app):
     if not path.exists(f'website/{DB_NAME}'):

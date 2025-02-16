@@ -2,6 +2,19 @@ from sqlalchemy import event
 from . import db
 from sqlalchemy import DateTime
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class Tovar(db.Model):
     __tablename__ = 'tovar'
@@ -18,7 +31,8 @@ class Tovar(db.Model):
     base = db.Column(db.String(20))
     info = db.Column(db.String(500))
     img_name = db.Column(db.String(500), unique=True)
-    order = db.relationship('Order', backref='tovar', lazy=True, cascade = "all, delete-orphan")
+    
+    order = db.relationship('Order', backref='orders', lazy=True, cascade="all, delete-orphan")
 
 class Order(db.Model):
     __tablename__ = 'order'
@@ -37,12 +51,14 @@ class Order(db.Model):
     flat = db.Column(db.String(10))
     comment = db.Column(db.String(200))
     promocod = db.Column(db.String(10))
-    tovar_name = db.Column(db.String(150), db.ForeignKey('tovar.name'), nullable=False)
+    tovar_id = db.Column(db.Integer, db.ForeignKey('tovar.id'), nullable=False)
     price = db.Column(db.Float)
     tovar_quantity = db.Column(db.Integer, default=0)
     status = db.Column(db.String(50), default='In processing')
     created_at = db.Column(DateTime, default=datetime.now)
+    
     point = db.relationship('Point', backref='order', lazy=True)
+    tovar = db.relationship('Tovar', backref='orders', lazy=True)
 
 class Point(db.Model):
     __tablename__ = 'point'
@@ -50,3 +66,5 @@ class Point(db.Model):
     city = db.Column(db.String)
     street = db.Column(db.String)
     number = db.Column(db.Integer)
+    
+    orders = db.relationship('Order', backref='receiving_point_rel', lazy=True)

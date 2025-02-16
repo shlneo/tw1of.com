@@ -1,9 +1,5 @@
-import shutil
-import tempfile
 from flask import Blueprint, render_template, send_file, url_for, json, flash, redirect, request, send_file, current_app, session
 from .models import Tovar, Order, Point
-from . import db
-from sqlalchemy import func
 from datetime import datetime
 import os
 from flask_admin import expose, AdminIndexView
@@ -69,7 +65,6 @@ def cart():
                            total_price=total_price, 
                            total_quantity=total_quantity)
 
-
 @views.route('/faq')
 def faq():
     total_quantity = get_items_cart()
@@ -90,29 +85,3 @@ def offer():
     total_quantity = get_items_cart()
     return render_template('offer.html', total_quantity=total_quantity)
 
-class MyMainView(AdminIndexView):
-    @expose('/')
-    def admin_stats(self):
-        base_path = os.path.abspath(os.path.join(os.path.dirname(__name__), 'website'))
-        image_folder = os.path.join(base_path, 'static', 'img')
-        video_folder = os.path.join(base_path, 'static', 'video')
-
-        images = [url_for('static', filename=f'img/{image}') for image in os.listdir(image_folder)]
-        videos = [url_for('static', filename=f'video/{image}') for image in os.listdir(video_folder)]
-        
-        num_images = len(images)
-        num_videos = len(videos)
-
-        tovar_data = Tovar.query.count()
-        order_data = db.session.query(func.count(Order.nomerzakaza.distinct())).scalar()
-        point_data = Point.query.count()
-
-        return self.render('admin/stats.html', 
-                           tovar_data=tovar_data,
-                           order_data=order_data,
-                           point_data=point_data,
-                           images=images, 
-                           videos=videos,
-                           num_images=num_images,
-                           num_videos=num_videos
-                           )

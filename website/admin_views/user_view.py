@@ -1,4 +1,4 @@
 from flask_admin.contrib.sqla import ModelView
 
-class PointView(ModelView):
+class UserView(ModelView):
     column_display_pk = True
