@@ -26,13 +26,14 @@ class Tovar(db.Model):
     status = db.Column(db.String(20))
     color = db.Column(db.String(30))
     size = db.Column(db.String(20))
-    thickness = db.Column(db.String(20)) 
-    material = db.Column(db.String(20)) 
+    thickness = db.Column(db.String(20))
+    material = db.Column(db.String(20))
     base = db.Column(db.String(20))
     info = db.Column(db.String(500))
     img_name = db.Column(db.String(500), unique=True)
     
-    order = db.relationship('Order', backref='orders', lazy=True, cascade="all, delete-orphan")
+    # Связь "один ко многим" с Order
+    orders = db.relationship('Order', backref='tovar_ref', lazy=True, cascade="all, delete-orphan")
 
 class Order(db.Model):
     __tablename__ = 'order'
@@ -57,8 +58,11 @@ class Order(db.Model):
     status = db.Column(db.String(50), default='In processing')
     created_at = db.Column(DateTime, default=datetime.now)
     
-    point = db.relationship('Point', backref='order', lazy=True)
-    tovar = db.relationship('Tovar', backref='orders', lazy=True)
+    # Связь "многие к одному" с Point
+    point = db.relationship('Point', backref='order_ref', lazy=True)
+    
+    # Связь "многие к одному" с Tovar
+    tovar = db.relationship('Tovar', backref='order_ref', lazy=True)
 
 class Point(db.Model):
     __tablename__ = 'point'
@@ -67,4 +71,5 @@ class Point(db.Model):
     street = db.Column(db.String)
     number = db.Column(db.Integer)
     
-    orders = db.relationship('Order', backref='receiving_point_rel', lazy=True)
+    # Связь "один ко многим" с Order
+    orders = db.relationship('Order', backref='point_ref', lazy=True)

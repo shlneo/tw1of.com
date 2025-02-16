@@ -2,7 +2,7 @@
 {% block content %}
       <div id="video_container">
         <video autoplay loop muted>
-          <source src="{{ url_for('static', filename='video/promo.mp4') }}" type="video/mp4">
+          <source src="{{ url_for('static', filename='video/promoр.mp4') }}" type="video/mp4">
         </video>
         <div class = "fraza_catalog">
           You'll never turn things around if you're not willing to sacrifice everything...
@@ -17,20 +17,21 @@
       <div id="type_products">
         <div class="type">
             <img src="{{ url_for('static', filename='img/mat.svg')}}" alt="Tw1_mat">
-            <div style = "color: #28cbff; ">Play mats</div>
+            <div с>Play mats</div>
         </div>
         <div class="type">
             <img src="{{ url_for('static', filename='img/tsh.svg')}}" alt="Tw1_tsh">
             <div>Clothes</div>
         </div>
-        <div class="type">
-            <img src="{{ url_for('static', filename='img/pc.svg')}}" alt="Tw1_pc">
-            <div>Gaming PCs</div>
-        </div>
+
         <div class="type">
             <img src="{{ url_for('static', filename='img/dev.svg')}}" alt="Tw1_dev">
             <div>Devices</div>
         </div>
+        <div class="type">
+          <img src="{{ url_for('static', filename='img/pc.svg')}}" alt="Tw1_pc">
+          <div>Gaming PCs</div>
+      </div>
     </div>
     <div class = "wrap_products">
       {% for tovar in tovar_list %}

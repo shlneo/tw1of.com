@@ -1242,7 +1242,7 @@ input[type="email"]:-webkit-autofill {
 
 /*info_page.css begin*/
 .info_page{
-  margin-top: 60px; 
+  margin-top: 190px; 
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -1260,7 +1260,7 @@ input[type="email"]:-webkit-autofill {
 .faq_question_info {
   max-width: 80%;
   margin: 0 auto;
-  min-height: 100vh;
+  min-height: calc(100vh - 190px);
   border-radius: 10px;
 
 }
@@ -1268,7 +1268,7 @@ input[type="email"]:-webkit-autofill {
 .infos {
   color: #555555;
   line-height: 1.6;
-  margin-top: 20px;
+
 }
 
 .infos p {
