@@ -1,5 +1,4 @@
-api.txt
-pass.txt
 venv
 .venv
-api_keys.py
+website/api_keys.py
+website/database.db
