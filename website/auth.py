@@ -10,6 +10,7 @@ from email.mime.multipart  import MIMEMultipart
 from email.mime.text import MIMEText
 from flask import session
 from werkzeug.security import check_password_hash
+from .api_keys import *
 
 auth = Blueprint('auth', __name__)
 
@@ -35,6 +36,7 @@ def logout():
     logout_user()
     return redirect(url_for('views.catalog'))
 
+
 def get_location_info(user_agent_string):
     try:
         ip_response = requests.get("https://api64.ipify.org?format=json")
@@ -58,30 +60,81 @@ def get_location_info(user_agent_string):
         print(f"Error when receiving location data: {e}")
         return "None", "None", "None", "None"
 
-def send_email(message_body, recipient_email, location=None, device=None, browser=None, ip_address=None):
+def send_email(order_details, recipient_email, location=None, device=None, browser=None, ip_address=None):
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    server = None
     smtp_server = 'smtp.mail.ru'
     smtp_port = 587
-    email_address = 'tw1.ofcompay@mail.ru'
-    email_password = ''
+    email_address = Semail
+    email_password = Spass
+
+    order_table = """
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background-color: #028dff; color: #fff;">
+                <th style="padding: 8px; border: 1px solid #ddd;">Item</th>
+                <th style="padding: 8px; border: 1px solid #ddd;">Quantity</th>
+                <th style="padding: 8px; border: 1px solid #ddd;">Price</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+    for item in order_details['items']:
+        order_table += f"""
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">{item['tovar_name']}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{item['quantity']}</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">{item['price']}</td>
+            </tr>
+        """
+    order_table += """
+        </tbody>
+    </table>
+    """
+
+    order_details_section = f"""
+    <div class="info">
+        <p><strong>Order Number:</strong> {order_details['nomerzakaza']}</p>
+        <p><strong>Delivery Type:</strong> {order_details['type']}</p>
+        <p><strong>Customer Name:</strong> {order_details['fio']}</p>
+        <p><strong>Email:</strong> {order_details['email']}</p>
+        <p><strong>Telephone:</strong> {order_details['telephone']}</p>
+        <p><strong>Receiving Point:</strong> {order_details['receiving_point'] or 'N/A'}</p>
+        <p><strong>Address:</strong> {order_details['street']} {order_details['house']}
+        {f"Apartment {order_details['flat']}" if order_details['flat'] else ''}</p>
+        <p><strong>City:</strong> {order_details['city']}</p>
+        <p><strong>Country:</strong> {order_details['country']}</p>
+        <p><strong>Comment:</strong> {order_details['comment'] or 'No comment'}</p>
+        <p><strong>Promo Code:</strong> {order_details['promocod'] or 'N/A'}</p>
+    </div>
+    """
+
+    final_message = f"""
+    <p>Here are the details of your order:</p>
+    {order_details_section}
+    <p>Items in your order:</p>
+    {order_table}
+    """
 
     base_styles = """
     <style>
         body { font-family: Arial, sans-serif; background-color: #f3f3f3; margin: 0; padding: 0; }
-        .email-container { max-width: 600px; margin: 20px auto; background-color: #fff; border-radius: 8px; 
+        .email-container { max-width: 600px; margin: 20px auto; background-color: #fff; border-radius: 8px;
                            overflow: hidden; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); }
         .header { background-color: #f3f3f3; text-align: center; padding: 20px; }
         .header a { font-size: 32px; font-weight: bold; padding: 15px; margin: 5px 0; }
         .content { padding: 20px; color: #333; }
-        .info { background-color: #f9f9f9; padding: 15px; border-left: 4px solid #028dff; margin: 20px 0; 
+        .info { background-color: #f9f9f9; padding: 15px; border-left: 4px solid #028dff; margin: 20px 0;
                 border-radius: 4px; }
-        .code { text-align: center; font-size: 32px; font-weight: bold; background-color: #f9f9f9; padding: 15px; 
-                border: 1px solid #ddd; border-radius: 5px; margin: 20px 0; }
         .footer { background-color: #f3f3f3; padding: 10px; text-align: center; font-size: 12px; color: #777; }
         .footer a { color: #6441a5; text-decoration: none; }
     </style>
     """
+
     content = f"""
-        <p>Hello</p>
+        <p>Hello {order_details['fio']},</p>
         <p>Thank you for your order.</p>
         <div class="info">
             {f'<p><strong>Location:</strong> {location}</p>' if location else ''}
@@ -89,30 +142,23 @@ def send_email(message_body, recipient_email, location=None, device=None, browse
             {f'<p><strong>Browser:</strong> {browser}</p>' if browser else ''}
             {f'<p><strong>IP-address:</strong> {ip_address}</p>' if ip_address else ''}
         </div>
-        <p>Your purchases:</p>
-        <div class="code">{message_body}</div>
-        <p>Если код не применяется, запросите новый код подтверждения и попробуйте выполнить следующие действия для решения проблемы:</p>
-        <ul>
-            <li>Используйте режим инкогнито или другой браузер</li>
-            <li>Очистите кэш вашего браузера и удалите файлы cookie</li>
-            <li>Убедитесь, что браузер обновлен до последней версии</li>
-        </ul>
+        {final_message}
+        <p>If you have any questions, please contact our support team.</p>
     """
 
     html_template = f"""
     <!DOCTYPE html>
-
     <html lang="en">
     <head>{base_styles}</head>
     <body>
         <div class="email-container">
-            <div class="header"><a>Erespondent-Online</a></div>
+            <div class="header"><a>Tw1of.com</a></div>
             <div class="content">
                 {content}
             </div>
             <div class="footer">
-                <p>Additional information can be found <a href="#">here</a>.</p>
-                <p>Thanks,<br>Support Service Tw1ofShop</p>
+                <p>Additional information can be found <a href="https://tw1of.com/">here</a>.</p>
+                <p>Thanks,<br>Support Service Tw1of.com</p>
             </div>
         </div>
     </body>
@@ -144,7 +190,7 @@ def add_to_cart():
 
     tovar = Tovar.query.filter_by(name=tovar_name).first()
     if not tovar or tovar.count <= 0:
-        flash(f'Нет в наличии {tovar_name}', category='error')
+        flash(f'Out of stock {tovar_name}', category='error')
         return redirect(url_for('views.product', name=tovar_name))
 
     if 'cart' not in session:
@@ -168,6 +214,7 @@ def add_to_cart():
     else:
         if quantity <= tovar.count:
             cart.append({
+                'tovar_id': tovar.id,
                 'tovar_name': tovar_name,
                 'quantity': quantity,
                 'price': round(price, 2),
@@ -178,7 +225,6 @@ def add_to_cart():
             flash(f'Недостаточно {tovar_name} на складе', category='error')
             return redirect(url_for('views.product', name=tovar_name))
 
-    # Recalculating the total amount and the total amount
     total_price = sum(item['price'] for item in cart)
     total_quantity = sum(item['quantity'] for item in cart)
 
@@ -197,17 +243,15 @@ def add_to_cart():
 
 @auth.route('/cart', methods=['GET', 'POST'])
 def createorder():
-    if request.method == 'POST': 
+    if request.method == 'POST':
         if 'cart' not in session or not session['cart']:
             flash('Your cart is empty. Add items to your cart before placing an order.', category='error')
             return redirect(url_for('views.cart'))
 
         items = session['cart']
-        # all_cart_price = round(sum(item['price'] * item['quantity'] for item in items), 2)
-
 
         max_nomerzakaza = db.session.query(func.max(Order.nomerzakaza)).scalar()
-        nomerzakaza = max_nomerzakaza + 1 if max_nomerzakaza is not None else 1  
+        nomerzakaza = max_nomerzakaza + 1 if max_nomerzakaza is not None else 1
 
         email = request.form.get('email')
         fio = request.form.get('fio')
@@ -222,36 +266,50 @@ def createorder():
         promocod = request.form.get('promocod')
 
         if receiving_point:
-            type = 'Delivery across the RB to the branch (Evropochta)' 
+            type = 'Delivery across the RB to the branch (Evropochta)'
             current_point = Point.query.filter_by(number=receiving_point).first()
             current_point_id = current_point.id if current_point else None
-            # all_cart_price = session.get('total_price_dbE', 0) 
         elif country != 'Belarus' or city:
-            type =  'Worldwide shipping'  
+            type = 'Worldwide shipping'
             current_point_id = None
-            # all_cart_price = session.get('total_price_ddE', 0) 
         else:
             type = "Door-to-door delivery in the RB (Evropochta)"
             current_point_id = None
-            # all_cart_price = session.get('total_price_wws', 0) 
+
+        order_details = {
+            "nomerzakaza": nomerzakaza,
+            "type": type,
+            "fio": fio,
+            "email": email,
+            "telephone": telephone,
+            "receiving_point": receiving_point,
+            "street": street,
+            "house": house,
+            "flat": flat,
+            "city": city,
+            "country": country,
+            "comment": comment,
+            "promocod": promocod,
+            "items": items 
+        }
 
         for item in items:
             new_order = Order(
-                nomerzakaza=nomerzakaza, 
+                nomerzakaza=nomerzakaza,
                 type=type,
-                fio=fio,  
-                email = email,
-                telephone=telephone, 
+                fio=fio,
+                email=email,
+                telephone=telephone,
                 receiving_point=current_point_id,
                 street=street,
                 house=house,
                 flat=flat,
-                city=city, 
-                country=country, 
-                comment=comment, 
-                promocod=promocod,             
-                price=item['price'], 
-                tovar_name=item['tovar_name'], 
+                city=city,
+                country=country,
+                comment=comment,
+                promocod=promocod,
+                price=item['price'],
+                tovar_id=item['tovar_id'],
                 tovar_quantity=item['quantity']
             )
             db.session.add(new_order)
@@ -264,20 +322,17 @@ def createorder():
                     tovar.status = "Sold"
                 db.session.commit()
 
-        # Отправка уведомления
         user_agent_string = request.headers.get('User-Agent')
         ip_address, location, os, browser = get_location_info(user_agent_string)
-        
-        send_email('123', email, location=location, device=os, browser=browser, ip_address=ip_address)
 
-        # Очистка корзины
+        send_email(order_details, email, location=location, device=os, browser=browser, ip_address=ip_address)
+
         session.pop('cart', None)
         session.pop('total_price', None)
         session.pop('total_price_dbE', None)
         session.pop('total_price_ddE', None)
         session.pop('total_price_wws', None)
         session.pop('total_quantity', None)
-
         flash('Order created successfully!', category='success')
     return redirect(url_for('views.cart'))
 

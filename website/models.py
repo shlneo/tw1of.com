@@ -55,7 +55,7 @@ class Order(db.Model):
     email = db.Column(db.String(150), nullable=False)
     telephone = db.Column(db.String(50), nullable=False)
     track_number = db.Column(db.String(200), default='Soon')
-   
+    
     country = db.Column(db.String(30), default='Belarus')
     city = db.Column(db.String(20))
     street = db.Column(db.String(100))
@@ -66,7 +66,7 @@ class Order(db.Model):
 
     tovar_id = db.Column(db.Integer, db.ForeignKey('tovar.id'), nullable=False)
     receiving_point = db.Column(db.String(150), db.ForeignKey('point.id'))
-    
+
     price = db.Column(db.Float)
     tovar_quantity = db.Column(db.Integer, default=0)
     status = db.Column(db.String(50), default='In processing')
