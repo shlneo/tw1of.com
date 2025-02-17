@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
       <div id="video_container">
-        <video autoplay loop muted>
-          <source src="{{ url_for('static', filename='video/promo12.mp4') }}" type="video/mp4">
+        <video autoplay loop muted preload="none" loading="lazy">
+          <source src="{{ url_for('static', filename='video/promo1.webm') }}">
         </video>
         <div class = "fraza_catalog">
           You'll never turn things around if you're not willing to sacrifice everything...

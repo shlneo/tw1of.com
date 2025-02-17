@@ -535,7 +535,7 @@ input[type="email"]:-webkit-autofill {
 
 #type_products .type:hover {
   transition: background-color 0.4s ease, color 0.4s ease;
-  background-color: #008ebd;
+  background-color: #39a0c2;
   border-radius: 5px;
   
   

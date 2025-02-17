@@ -1,0 +1,25 @@
+{% extends 'admin/base.html' %}
+{% block body %}
+<div class="container-fluid" style="padding-top: 30px;">
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>User_data</td>
+                <td>{{ user_data }}</td>
+            </tr>
+            <tr>
+                <td>Tovar_data</td>
+                <td>{{ tovar_data }}</td>
+            </tr>
+            <tr>
+                <td>Point_data</td>
+                <td>{{ point_data }}</td>
+            </tr>
+            <tr>
+                <td>Order_data</td>
+                <td>{{ order_data }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

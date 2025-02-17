@@ -5,16 +5,15 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_babel import Babel
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
-# from flask_script import Manager
-from flask import Flask, redirect, url_for, render_template
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from flask_admin.contrib.sqla import ModelView
+from flask_login import LoginManager, current_user
+
 
 db = SQLAlchemy()
-DB_NAME = "database.db"
 babel = Babel()
 migrate = Migrate()
 bcrypt = Bcrypt()
+
+DB_NAME = "database.db"
 
 def create_app():
     app = Flask(__name__)
@@ -29,33 +28,33 @@ def create_app():
     migrate.init_app(app, db, render_as_batch=True)
 
     login_manager = LoginManager(app)
-    login_manager.login_view = 'login'  # Укажите маршрут для входа
+    login_manager.login_view = 'login' 
     
-    from .models import Tovar, Order, Point, User
-    
+
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
-
 
     from .views import views
     from .auth import auth
 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
-
     with app.app_context():
         create_database(app)
-
-    from website.admin_views.user_view import UserView
-    from website.admin_views.tovar_view import TovarView
-    from website.admin_views.order_view import OrderView
-    from website.admin_views.point_view import PointView
-    from website.admin_views.image_view import ImageView
-    from website.admin_views.video_view import VideoView
-
-    admin = Admin(app, template_mode='bootstrap3')
     
+    from .models import Tovar, Order, Point, User
+    from website.admin.admin_views import MyMainView
+
+    from website.admin.user_view import UserView
+    from website.admin.tovar_view import TovarView
+    from website.admin.order_view import OrderView
+    from website.admin.point_view import PointView
+    from website.admin.image_view import ImageView
+    from website.admin.video_view import VideoView
+
+    admin = Admin(app, 'Logout', index_view=MyMainView(), template_mode='bootstrap4', url='/logout')
+
     admin.add_view(UserView(User, db.session))
     admin.add_view(TovarView(Tovar, db.session))
     admin.add_view(OrderView(Order, db.session))
@@ -65,16 +64,24 @@ def create_app():
 
     return app
 
-class MyModelView(ModelView):
-    # Убедитесь, что здесь нет ошибок в конфигурации
-    pass
-
 def create_database(app):
     if not path.exists(f'website/{DB_NAME}'):
         with app.app_context():
             db.create_all()
         print('Created Database!')
-        from .models import Tovar, Point
+        from .models import Tovar, Point, User
+        if User.query.count() == 0:
+            User_data = [
+                ('shin', '1234', True)
+            ]
+        for data in User_data:
+            user = User(
+                username=data[0],
+                password_hash = data[1],
+                is_admin = data[2]
+            )
+            db.session.add(user)
+
         if Tovar.query.count() == 0:
             Tovar_data = [
                 ('Tokyo Ghoul', 'Mat', 0, 29.99, 'Soon', 'Anime', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'This gaming mat is suitable for all ELO abusers with FACEIT, especially the bold pixel art will be appreciated by fans of bright and colorful devices! The soft coating provides maximum comfort with any mouse sensitivity used. The rubber base guarantees the mat immobility during sudden movements.', 'Tokyo_Ghoul'), 
