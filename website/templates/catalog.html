@@ -2,63 +2,71 @@
 {% block content %}
       <div id="video_container">
         <video autoplay loop muted>
-          <source src="{{ url_for('static', filename='video/promoр.mp4') }}" type="video/mp4">
+          <source src="{{ url_for('static', filename='video/promo12.mp4') }}" type="video/mp4">
         </video>
         <div class = "fraza_catalog">
           You'll never turn things around if you're not willing to sacrifice everything...
         </div>
         <div class = "pod_fraza_catalog">
-          A new collection of play mats is available below!
+          The website for the sale of "Tw1" by "Shin" merchandise is under development, all products (at the moment) are exemplary and have nothing to do with the "Tw1" brand. Vedeo by youtube.com/@Molob 
         </div>
           <a href="#type_products" class="scroll-link">
             <button class="blue_buttom">Go to the product</button>
           </a>
       </div>
       <div id="type_products">
-        <div class="type">
-            <img src="{{ url_for('static', filename='img/mat.svg')}}" alt="Tw1_mat">
-            <div с>Play mats</div>
+        <div class="type active" data-type="All">
+          <img src="{{ url_for('static', filename='img/logo.svg')}}" alt="Tw1_all">
+          <div>All</div>
         </div>
-        <div class="type">
+        <div class="type" data-type="Mat">
+            <img src="{{ url_for('static', filename='img/mat.svg')}}" alt="Tw1_mat">
+            <div>Play mats</div>
+        </div>
+        <div class="type" data-type="Clothes">
             <img src="{{ url_for('static', filename='img/tsh.svg')}}" alt="Tw1_tsh">
             <div>Clothes</div>
         </div>
-
-        <div class="type">
+        <div class="type" data-type="Devices">
             <img src="{{ url_for('static', filename='img/dev.svg')}}" alt="Tw1_dev">
             <div>Devices</div>
         </div>
-        <div class="type">
-          <img src="{{ url_for('static', filename='img/pc.svg')}}" alt="Tw1_pc">
-          <div>Gaming PCs</div>
-      </div>
-    </div>
-    <div class = "wrap_products">
-      {% for tovar in tovar_list %}
-      <div class="spisok_tovarov_cont">
-        <div class="card">
-          <a href="{{ url_for('views.product', name=tovar.name) }}">
-            {% if tovar.name == 'Samurai Large'%}
-              <img src="{{ url_for('static', filename='img/' + tovar.img_name + '.png') }}" style = "  width: 86%; " alt="{{ tovar.name }}">
-            {% else %}
-              <img src="{{ url_for('static', filename='img/' + tovar.img_name + '.png') }}" alt="{{ tovar.name }}">
-            {% endif %}
-          </a>
+        <div class="type" data-type="GamingPC">
+            <img src="{{ url_for('static', filename='img/pc.svg')}}" alt="Tw1_pc">
+            <div>Gaming PCs</div>
         </div>
-        <div class="description">
-          <span>{{ tovar.name }} 
-            {% if tovar.status == 'Soon'%}
-              <span class="new">new</span> 
-            {% else %}
-            {% endif %}
-          </span>
-          {% if tovar.status == 'Soon'%}
-            <div class="status" style = "color: white;">{{ tovar.status }}</div>
-          {% else %}
+
+    </div>
+    
+    <div class="wrap_products">
+      {% if tovar_list %}
+        {% for tovar in tovar_list %}
+        <div class="spisok_tovarov_cont" data-type="{{ tovar.type }}">
+          <div class="card">
+            <a href="{{ url_for('views.product', name=tovar.name) }}">
+                  {% if tovar.name == 'Samurai Large' %}
+                    <img src="{{ url_for('static', filename='img/' + tovar.img_name + '.png') }}" style="width: 86%;" alt="{{ tovar.name }}">
+                  {% else %}
+                    <img src="{{ url_for('static', filename='img/' + tovar.img_name + '.png') }}" alt="{{ tovar.name }}">
+                  {% endif %}
+            </a>
+          </div>
+          <div class="description">
+            <span>{{ tovar.name }} 
+              {% if tovar.status == 'Soon' %}
+                <span class="new">new</span> 
+              {% endif %}
+            </span>
             <div class="status">{{ tovar.status }}</div>
-          {% endif %}
+          </div>
         </div>
-      </div>
-      {% endfor %}
+        {% endfor %}
+      {% else %}
+        <div>no-products</div>
+      {% endif %}
     </div>
+    
+  </div>
+
+    
 {% endblock %}

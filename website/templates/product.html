@@ -13,7 +13,7 @@
     </div>
     <div class="cont_info_prodyct">
         <div class = "product_name_text">{{ tovar.name }}</div>
-        <div class = "type_of_prod_text">Mat</div>
+        <div class = "type_of_prod_text">{{ tovar.type }}</div>
         <hr style = "margin: 10px 0;">
         {%if tovar.status == 'Soon' or tovar.status == 'Sold'%}
           <div class = "quantity_of_product_text">{{ tovar.status }}</div>
@@ -29,11 +29,25 @@
         <div class = "description_prod_text">{{ tovar.info }}</div>
         <div class = "specifications_prod_text_name">Specifications</div>
         <div class="product_features">
-            <div><span>Colour</span> - {{ tovar.color }}</div>
+          <div><span>Colour</span> - {{ tovar.color }}</div>
+          {%if tovar.type == 'Mat'%}
             <div><span>Size</span> - {{ tovar.size }}</div>
             <div><span>Thickness</span> - {{ tovar.thickness }}</div>
             <div><span>Material</span> - {{ tovar.material }}</div>
             <div><span>Base</span> - {{ tovar.base }}</div>
+          {%elif tovar.type == 'Clothes' and tovar.name == 'BACKPACK'%}
+            <div><span>Height</span> - {{ tovar.height }}</div>
+            <div><span>Width</span> - {{ tovar.width }}</div>
+            <div><span>Depth</span> - {{ tovar.depth }}</div>
+            <div><span>Upper material</span> - {{ tovar.upper_material }}</div>
+            <div><span>Iining material</span> - {{ tovar.ining_material }}</div>
+            <div><span>Back straps</span> - {{ tovar.back_straps }}</div>
+            <div><span>Zipper</span> - {{ tovar.zipper }}</div>
+            <div><span>Fastexes buckles</span> - {{ tovar.fastexes_buckles }}</div>
+          {%else%}
+          
+          {%endif%}
+          
         </div>  
         <form action="/add_to_cart" method="post">
             <input type="hidden" name="tovar_name" value="{{ tovar.name }}">

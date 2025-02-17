@@ -1,3 +1,37 @@
+document.addEventListener("DOMContentLoaded", function () {
+    const typeButtons = document.querySelectorAll("#type_products .type");
+    const products = document.querySelectorAll(".spisok_tovarov_cont");
+    const wrapProducts = document.querySelector(".wrap_products");
+
+    const noProductsMessage = document.createElement("div");
+    noProductsMessage.classList.add("no-products");
+    noProductsMessage.textContent = "not yet, but it is planned.";
+    noProductsMessage.style.display = "none";
+    wrapProducts.appendChild(noProductsMessage);
+
+    typeButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const selectedType = this.getAttribute("data-type");
+
+            typeButtons.forEach(btn => btn.classList.remove("active"));
+            this.classList.add("active");
+
+            let hasVisibleProducts = false;
+
+            products.forEach(product => {
+                const productType = product.getAttribute("data-type");
+                if (productType === selectedType || selectedType === "All") {
+                    product.style.display = "block";
+                    hasVisibleProducts = true;
+                } else {
+                    product.style.display = "none";
+                }
+            });
+            noProductsMessage.style.display = hasVisibleProducts ? "none" : "block";
+        });
+    });
+});
+
 //header
 const header = document.querySelector('.fixed-header');
 window.addEventListener('scroll', () => {
@@ -29,16 +63,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
   
-  document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     var menuButton = document.getElementById('menu-button');
-    var dropdownContent = document.querySelector('.center-content');
+    var dropdownContent = document.querySelector('.dropdown-content');
     var header = document.querySelector('header');
+
     menuButton.addEventListener('click', function () {
         header.style.backgroundColor = 'black';
-        dropdownContent.classList.toggle('show');
+        dropdownContent.classList.toggle('show'); 
+        menuButton.classList.toggle('rotate'); 
     });
 });
-
 
 document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('load', function () {

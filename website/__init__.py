@@ -103,6 +103,47 @@ def create_database(app):
                     img_name = data[11]
                 )
                 db.session.add(tovar)
+
+            Tovar_data2 = [
+                ('BACKPACK', 
+                 'Clothes', 
+                 40, 
+                 49.99, 
+                 'In stoke', 
+                 'Black',
+                '28.5 sm', 
+                '50 sm', 
+                '14 sm', 
+                'Cordura 1000D, 100% nylon', 
+                'Oxford 210D, 100% polyester',
+                'three-layer mesh, sealed with foam plastic', 
+                'spiral water-repellent', 
+                'plastic', 
+                'Backpack', 
+                'The perfect companion for your daily life! The elegant lines and minimalist style make this backpack a great addition to any look. The backpack is made of high-quality materials, ensuring a long service life. Combine style and practicality in one product')
+            ]
+            for data in Tovar_data2:
+                tovar2 = Tovar(
+                    name=data[0],
+                    type = data[1],
+                    count=data[2],
+                    cost = data[3],
+                    status = data[4],
+                    color = data[5],
+
+                    height = data[6],
+                    width = data[7],
+                    depth = data[8],
+                    upper_material = data[9],
+                    ining_material = data[10],
+                    back_straps = data[11],
+                    zipper = data[12],
+                    fastexes_buckles = data[13],
+                    img_name = data[14],
+                    info = data[15]
+                )
+                db.session.add(tovar2)
+
         if Point.query.count() == 0:
             point_data = [
             ('Minsk', 'ul. Installers, 2 Euroopt', 1),
