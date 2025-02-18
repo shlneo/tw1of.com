@@ -65,23 +65,22 @@ def create_app():
     return app
 
 def create_database(app):
+    from .models import Tovar, Point, User
     if not path.exists(f'website/{DB_NAME}'):
         with app.app_context():
             db.create_all()
         print('Created Database!')
-        from .models import Tovar, Point, User
         if User.query.count() == 0:
             User_data = [
                 ('shin', '1234', True)
             ]
-        for data in User_data:
-            user = User(
-                username=data[0],
-                password_hash = data[1],
-                is_admin = data[2]
-            )
-            db.session.add(user)
-
+            for data in User_data:
+                user = User(
+                    username=data[0],
+                    password_hash = data[1],
+                    is_admin = data[2]
+                )
+                db.session.add(user)
         if Tovar.query.count() == 0:
             Tovar_data = [
                 ('Tokyo Ghoul', 'Mat', 0, 29.99, 'Soon', 'Anime', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'This gaming mat is suitable for all ELO abusers with FACEIT, especially the bold pixel art will be appreciated by fans of bright and colorful devices! The soft coating provides maximum comfort with any mouse sensitivity used. The rubber base guarantees the mat immobility during sudden movements.', 'Tokyo_Ghoul'), 
