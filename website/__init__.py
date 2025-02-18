@@ -62,15 +62,17 @@ def create_app():
 
     return app
 
+from .api_keys import *
 def create_database(app):
     from .models import Tovar, Point, User
+
     if not path.exists(f'website/{DB_NAME}'):
         with app.app_context():
             db.create_all()
         print('Created Database!')
         if User.query.count() == 0:
             User_data = [
-                ('shin', '1234', True)
+                ('shin', userpass, True)
             ]
             for data in User_data:
                 user = User(

@@ -1,11 +1,12 @@
 PERSONAL WEBSITE FOR THE SALE OF MERCH
 
+need to add api_key.py and after
 1. py -m venv venv 
 2. venv\Scripts\activate
 3. pip install -r requirements.tx  
 4. py main.py 
 
-or 
+or just
 
 https://tw1of.pythonanywhere.com
 
