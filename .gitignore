@@ -2,3 +2,4 @@ venv
 .venv
 website/api_keys.py
 website/database.db
+__pycache__
