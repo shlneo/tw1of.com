@@ -1,6 +1,9 @@
-Personal website for the sale of merch
+PERSONAL WEBSITE FOR THE SALE OF MERCH
 
-run > py main.py 
+1. py -m venv venv 
+2. venv\Scripts\activate
+3. pip install -r requirements.tx  
+4. py main.py 
 
 or 
 

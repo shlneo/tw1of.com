@@ -1,10 +1,7 @@
-from flask import Blueprint, render_template, send_file, url_for, json, flash, redirect, request, send_file, current_app, session
+from flask import Blueprint, render_template, session
 from .models import Tovar, Order, Point
 from datetime import datetime
-import os
-from flask_admin import expose, AdminIndexView
 from sqlalchemy import desc
-from functools import wraps
 
 views = Blueprint('views', __name__)
 current_date = datetime.now().date()

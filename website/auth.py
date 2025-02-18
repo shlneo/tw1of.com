@@ -1,19 +1,15 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, json
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, login_user, logout_user
 from .models import Tovar, Order, Point, User
 import requests
 from . import db
 from user_agents import parse
 from sqlalchemy import func
-import smtplib
-from email.mime.multipart  import MIMEMultipart
-from email.mime.text import MIMEText
 from flask import session
 from werkzeug.security import check_password_hash
 from .api_keys import *
 
 auth = Blueprint('auth', __name__)
-
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -35,7 +31,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('views.catalog'))
-
 
 def get_location_info(user_agent_string):
     try:
@@ -93,7 +88,6 @@ def send_email(order_details, recipient_email, location=None, device=None, brows
         </tbody>
     </table>
     """
-
     order_details_section = f"""
     <div class="info">
         <p><strong>Order Number:</strong> {order_details['nomerzakaza']}</p>
@@ -110,14 +104,12 @@ def send_email(order_details, recipient_email, location=None, device=None, brows
         <p><strong>Promo Code:</strong> {order_details['promocod'] or 'N/A'}</p>
     </div>
     """
-
     final_message = f"""
     <p>Here are the details of your order:</p>
     {order_details_section}
     <p>Items in your order:</p>
     {order_table}
     """
-
     base_styles = """
     <style>
         body { font-family: Arial, sans-serif; background-color: #f3f3f3; margin: 0; padding: 0; }
@@ -132,7 +124,6 @@ def send_email(order_details, recipient_email, location=None, device=None, brows
         .footer a { color: #6441a5; text-decoration: none; }
     </style>
     """
-
     content = f"""
         <p>Hello {order_details['fio']},</p>
         <p>Thank you for your order.</p>
@@ -145,7 +136,6 @@ def send_email(order_details, recipient_email, location=None, device=None, brows
         {final_message}
         <p>If you have any questions, please contact our support team.</p>
     """
-
     html_template = f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -235,7 +225,6 @@ def add_to_cart():
     session['total_price_wws'] = round(session['total_price'] + 7.50, 2)  
     
     session['total_quantity'] = total_quantity 
-
     session.modified = True
 
     flash('The product has been added to the cart', category='success')
@@ -247,7 +236,7 @@ def createorder():
         if 'cart' not in session or not session['cart']:
             flash('Your cart is empty. Add items to your cart before placing an order.', category='error')
             return redirect(url_for('views.cart'))
-
+        
         items = session['cart']
 
         max_nomerzakaza = db.session.query(func.max(Order.nomerzakaza)).scalar()
@@ -351,7 +340,7 @@ def update_cart():
         for item in session_cart:
             if item['tovar_name'] == product_name:
                 item['quantity'] = new_quantity
-                item['price'] = round(item['price_per_unit'] * new_quantity, 2)  # Ограничиваем 2 знаками после запятой
+                item['price'] = round(item['price_per_unit'] * new_quantity, 2)
                 break
 
         total_price = sum(item['price'] for item in session_cart)
@@ -380,21 +369,18 @@ def update_cart():
 @auth.route('/remove_item', methods=['POST'])
 def remove_item():
     try:
-        data = request.get_json()  # Получаем данные из запроса
+        data = request.get_json()
         product_name = data.get('tovar_name')
 
         if not product_name:
             return jsonify({'error': 'Invalid input'}), 400
 
-        # Обновляем корзину: удаляем товар по имени
         session_cart = session.get('cart', [])
         session_cart = [item for item in session_cart if item['tovar_name'] != product_name]
 
-        # Пересчитываем общую сумму и количество
         total_price = sum(item['price'] for item in session_cart)
         total_quantity = sum(item['quantity'] for item in session_cart)
 
-        # Обновляем сессию с новыми значениями
         session['cart'] = session_cart
         session['total_price'] = round(total_price, 2)
         session['total_price_dbE'] = round(total_price + 2.50, 2)  
@@ -402,7 +388,6 @@ def remove_item():
         session['total_price_wws'] = round(total_price + 7.50, 2) 
 
         session['total_quantity'] = total_quantity
-
         session.modified = True
 
         return jsonify({
