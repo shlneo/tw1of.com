@@ -59,23 +59,20 @@ def send_email(order_details, recipient_email, location=None, device=None, brows
     import smtplib
     from email.mime.text import MIMEText
     from email.mime.multipart import MIMEMultipart
-    server = None
-    smtp_server = 'smtp.mail.ru'
-    smtp_port = 587
-    email_address = Semail
-    email_password = Spass
+    sender = EMAILNAME
+    password = EMAILPASS
 
     order_table = """
-    <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-            <tr style="background-color: #028dff; color: #fff;">
-                <th style="padding: 8px; border: 1px solid #ddd;">Item</th>
-                <th style="padding: 8px; border: 1px solid #ddd;">Quantity</th>
-                <th style="padding: 8px; border: 1px solid #ddd;">Price</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #028dff; color: #fff;">
+                    <th style="padding: 8px; border: 1px solid #ddd;">Item</th>
+                    <th style="padding: 8px; border: 1px solid #ddd;">Quantity</th>
+                    <th style="padding: 8px; border: 1px solid #ddd;">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+        """
     for item in order_details['items']:
         order_table += f"""
             <tr>
@@ -88,6 +85,7 @@ def send_email(order_details, recipient_email, location=None, device=None, brows
         </tbody>
     </table>
     """
+    
     order_details_section = f"""
     <div class="info">
         <p><strong>Order Number:</strong> {order_details['nomerzakaza']}</p>
@@ -142,35 +140,40 @@ def send_email(order_details, recipient_email, location=None, device=None, brows
     <head>{base_styles}</head>
     <body>
         <div class="email-container">
-            <div class="header"><a>Tw1of.com</a></div>
+            <div class="header"><a>Tw1</a></div>
             <div class="content">
                 {content}
             </div>
             <div class="footer">
-                <p>Additional information can be found <a href="https://tw1of.com/">here</a>.</p>
-                <p>Thanks,<br>Support Service Tw1of.com</p>
+                <p>Additional information can be found <a href="https://tw1of.pythonanywhere.com">here</a>.</p>
+                <p>Thanks,<br>Support Service Tw1</p>
             </div>
         </div>
     </body>
     </html>
     """
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
 
-    message = MIMEMultipart("alternative")
-    message['From'] = email_address
-    message['To'] = recipient_email
-    message['Subject'] = 'Order Notification'
-    message.attach(MIMEText(html_template, 'html'))
+    try: 
+        server.login(sender, password)
+        
+        msg = MIMEMultipart()
+        msg["From"] = sender
+        msg["To"] = recipient_email
+        msg["Subject"] = "Уведомление от Erespondent-Online"
+        
+        msg.attach(MIMEText(html_template, "html"))
 
-    try:
-        server = smtplib.SMTP(smtp_server, smtp_port)
-        server.starttls()
-        server.login(email_address, email_password)
-        server.send_message(message)
-        print("The email was sent successfully")
-    except Exception as e:
-        print(f"Error when sending an email: {e}")
+        server.sendmail(sender, recipient_email, msg.as_string())
+
+        return "Email sent successfully"
+    except Exception as _ex:
+        return f"{_ex}\nCheck log ..."
     finally:
         server.quit()
+
+        
 
 @auth.route('/add_to_cart', methods=['POST'])
 def add_to_cart():
