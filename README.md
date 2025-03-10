@@ -1,12 +1,20 @@
-PERSONAL WEBSITE FOR THE SALE OF MERCH
+# PERSONAL WEBSITE FOR THE SALE OF MERCH
 
-need to add api_key.py and after
-1. py -m venv venv 
-2. venv\Scripts\activate
-3. pip install -r requirements.tx  
-4. py main.py 
+## Requirements
 
-or just
+- python 3.10.0
+- add api_key.py
+
+## Installation
+
+- clone the tw1of.com repository
+- create a virtual environment `python -m venv .venv`
+- activate the virtual environment `.venv\Scripts\activate`
+- install the libraries `pip install -r requirements.txt `
+
+## Launch
+
+- `py main.py`
 
 https://tw1of.pythonanywhere.com
 
