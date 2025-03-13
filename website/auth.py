@@ -140,13 +140,13 @@ def send_email(order_details, recipient_email, location=None, device=None, brows
     <head>{base_styles}</head>
     <body>
         <div class="email-container">
-            <div class="header"><a>Tw1</a></div>
+            <div class="header"><a>shln</a></div>
             <div class="content">
                 {content}
             </div>
             <div class="footer">
-                <p>Additional information can be found <a href="https://tw1of.pythonanywhere.com">here</a>.</p>
-                <p>Thanks,<br>Support Service Tw1</p>
+                <p>Additional information can be found <a href="https://shlnof.pythonanywhere.com">here</a>.</p>
+                <p>Thanks,<br>Support Service shln</p>
             </div>
         </div>
     </body>

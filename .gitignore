@@ -1,6 +1,6 @@
 venv
 .venv
 website/api_keys.py
-website/database.db
+# website/database.db
 __pycache__
 website/__pycache__

@@ -2,99 +2,123 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"/>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+    />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/base.css') }}"
+    />
 
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/logo.svg')}}">
-    <title>{% block title %}Tw1{% endblock %}</title>
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='img/logo.svg')}}"
+    />
+    <title>{% block title %}shln{% endblock %}</title>
   </head>
-  
+
   <body>
     <header class="fixed-header">
       <div class="header-content">
-          <div class="left-content">
-              <nav>
-                  <ul>    
-                      <li> 
-                          <a id="menu-button">
-                              <img src="{{ url_for('static', filename='img/menu.png')}}" alt="">
-                          </a>
-                      </li> 
-                      <li class="logo_area" onclick="window.location.href='/'"> 
-                          <img src="{{ url_for('static', filename='img/logo.svg')}}" alt="logo">
-                     
-                      </li>
-                  </ul>
-                </nav>
-            </div>
-            <div class="center-content dropdown-content">
-              <nav>
-                  <ul>    
-                      <li onclick="window.location.href='/'"> 
-                          Catalog
-                      </li>
-                      <li onclick="window.location.href='/faq'">
-                          FAQ
-                      </li>
-                      <li onclick="window.open('https://t.me/shin_7171', '_blank')">
-                        Support
-                      </li>
-                  </ul>
-              </nav>
-          </div>
-          <div class="right-content">
-              <nav>
-                  <ul>
-                      <li onclick="window.location.href='/cart'">
-                          <div class="count_cont">
-                              <img src="{{ url_for('static', filename='img/cart.png')}}" alt="Cart" class="cart-image">
-                              {% if total_quantity %}
-                                  <div class="item_count" id="total-quantity">{{ total_quantity }}</div>
-                              {% endif %}
-                          </div>
-                      </li>  
-                  </ul>
-              </nav>
-          </div>
+        <div class="left-content">
+          <nav>
+            <ul>
+              <li>
+                <a id="menu-button">
+                  <img
+                    src="{{ url_for('static', filename='img/menu.png')}}"
+                    alt=""
+                  />
+                </a>
+              </li>
+              <li class="logo_area" onclick="window.location.href='/'">
+                <img
+                  src="{{ url_for('static', filename='img/logo.svg')}}"
+                  alt="logo"
+                />
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div class="center-content dropdown-content">
+          <nav>
+            <ul>
+              <li onclick="window.location.href='/'">Catalog</li>
+              <li onclick="window.location.href='/faq'">FAQ</li>
+              <li onclick="window.open('https://t.me/shin_7171', '_blank')">
+                Support
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div class="right-content">
+          <nav>
+            <ul>
+              <li onclick="window.location.href='/cart'">
+                <div class="count_cont">
+                  <img
+                    src="{{ url_for('static', filename='img/cart.png')}}"
+                    alt="Cart"
+                    class="cart-image"
+                  />
+                  {% if total_quantity %}
+                  <div class="item_count" id="total-quantity">
+                    {{ total_quantity }}
+                  </div>
+                  {% endif %}
+                </div>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
-  </header>
+    </header>
     <main>
-      {% with messages = get_flashed_messages(with_categories=true) %} 
-        {% if messages %}
-          {% for category, message in messages %}
-            <div class="alert {% if category == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissable fade show custom-alert" role="alert">
-              {{ message }}
-            </div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
-      <div class="cont" style = "width: 100%;">
-        {% block content %} 
-        {% endblock %}
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="alert {% if category == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissable fade show custom-alert"
+        role="alert"
+      >
+        {{ message }}
       </div>
-        {% block javascript %} 
-          <script src="{{ url_for('static', filename='js/index.js') }}"></script>
-        {% endblock %}
-        </main>
-        <footer>
-          <div class = "fot_cont_text">
-            <div onclick="window.location.href='/privacy'">Privacy policy</div>
-            <div onclick="window.location.href='/offer'">The offer agreement</div>
-            <div onclick="window.location.href='/info'">Additional information</div>
-        </div>
-        <div class = "fot_cont_img">
-          <a href="https://t.me/shin_7171" target="_blank">
-            <img src="{{ url_for('static', filename='img/telegram.png')}}" alt="">
-          </a>
-          <a href="https://www.youtube.com/channel/UCBsJKKsALtclr1GFcGkJn2A" target="_blank">
-            <img src="{{ url_for('static', filename='img/youtube.png')}}" alt="">
-          </a>
-          <a href="https://www.twitch.tv/shin7171" target="_blank">
-            <img src="{{ url_for('static', filename='img/twitch.png')}}" alt="">
-          </a>
-        </div>
-      </footer>
+      {% endfor %} {% endif %} {% endwith %}
+      <div class="cont" style="width: 100%">
+        {% block content %} {% endblock %}
+      </div>
+      {% block javascript %}
+      <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+      {% endblock %}
+    </main>
+    <footer>
+      <div class="fot_cont_text">
+        <div onclick="window.location.href='/privacy'">Privacy policy</div>
+        <div onclick="window.location.href='/offer'">The offer agreement</div>
+        <div onclick="window.location.href='/info'">Additional information</div>
+      </div>
+      <div class="fot_cont_img">
+        <a href="https://t.me/shin_7171" target="_blank">
+          <img
+            src="{{ url_for('static', filename='img/telegram.png')}}"
+            alt=""
+          />
+        </a>
+        <a
+          href="https://www.youtube.com/channel/UCBsJKKsALtclr1GFcGkJn2A"
+          target="_blank"
+        >
+          <img
+            src="{{ url_for('static', filename='img/youtube.png')}}"
+            alt=""
+          />
+        </a>
+        <a href="https://www.twitch.tv/shin7171" target="_blank">
+          <img src="{{ url_for('static', filename='img/twitch.png')}}" alt="" />
+        </a>
+      </div>
+    </footer>
   </body>
 </html>

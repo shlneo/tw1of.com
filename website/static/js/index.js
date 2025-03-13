@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let belarusCities = [];
 
     function loadBelarusCities() {
-        const username = 'tw1chee2k';
+        const username = 'shlnchee2k';
         const url = `https://secure.geonames.org/searchJSON?country=BY&maxRows=1000&username=${username}`;
         fetch(url)
             .then(response => response.json())

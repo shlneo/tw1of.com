@@ -1,248 +1,348 @@
-{% extends "base.html" %}
-{% block content %}
-<div class = "basket_main_contener"> 
-    <div class = "basket_products_cont">
-        <div class = "product_name_text">Cart</div>
-        <hr> 
-        {% if cart %}
-        <ul class="list_group">
-            {% for item in cart %}
-                <li class="list_group_product">
-                    <div class="cont_cards_tovari">
-                        <div class="info_cont_about_tavar">
-                            <img src="{{ url_for('static', filename='img/' + item.img_name + '.png') }}" alt="{{ item.tovar_name }}">
-                            <div class="pr_name_tovar">
-                                <div>{{ item.tovar_name }}</div>
-                                <input type="text" id="price-{{ item.tovar_name }}" value="{{ item.price }}$" readonly>         
-                            </div>
-                        </div>
-                        <div class="cont_regstr_count">
-                
-        
-                            <button type="button" class="busket_button_minus" data-id="{{ item.tovar_name }}">-</button>
-                            <input type="text" id="item-quantity-{{ item.tovar_name }}" value="{{ item.quantity }}" readonly>  
-                            <button type="button" class="busket_button_plus" data-id="{{ item.tovar_name }}">+</button>
-
-                        </div> 
-                        <button class="busket_delete_button" type="button">×</button>
-                    </div>  
-                </li>
-                <hr>
-            {% endfor %}
-        </ul> 
-        {% else %}
-            <div class="no_orders_cont">
-                <p class="no_orders_text">CART IS EMPTY</p>
-                <p>add the product to the cart</p>
-            </div>  
-        {% endif %}
+{% extends "base.html" %} {% block content %}
+<div class="basket_main_contener">
+  <div class="basket_products_cont">
+    <div class="product_name_text">Cart</div>
+    <hr />
+    {% if cart %}
+    <ul class="list_group">
+      {% for item in cart %}
+      <li class="list_group_product">
+        <div class="cont_cards_tovari">
+          <div class="info_cont_about_tavar">
+            <img
+              src="{{ url_for('static', filename='img/' + item.img_name + '.png') }}"
+              alt="{{ item.tovar_name }}"
+            />
+            <div class="pr_name_tovar">
+              <div>{{ item.tovar_name }}</div>
+              <input
+                type="text"
+                id="price-{{ item.tovar_name }}"
+                value="{{ item.price }}$"
+                readonly
+              />
+            </div>
+          </div>
+          <div class="cont_regstr_count">
+            <button
+              type="button"
+              class="busket_button_minus"
+              data-id="{{ item.tovar_name }}"
+            >
+              -
+            </button>
+            <input
+              type="text"
+              id="item-quantity-{{ item.tovar_name }}"
+              value="{{ item.quantity }}"
+              readonly
+            />
+            <button
+              type="button"
+              class="busket_button_plus"
+              data-id="{{ item.tovar_name }}"
+            >
+              +
+            </button>
+          </div>
+          <button class="busket_delete_button" type="button">×</button>
+        </div>
+      </li>
+      <hr />
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="no_orders_cont">
+      <p class="no_orders_text">CART IS EMPTY</p>
+      <p>add the product to the cart</p>
     </div>
-    <div class = "create_order_cont">
-        <div class = "product_name_text">Making an order</div>
-        <hr>
-        <form method="POST">
-            <div class="cont_order">
-                <div class="name">Contact information</div>
-                <div class="podname">Email</div>
-                <input type="text" id="email" name="email" placeholder = "delovoytw1@gmail.com" required/>
-                <div class="podname">Telephone</div>
-                <input type="text" id="telephone" name="telephone" placeholder = "+375.." class = "numeric-plus-only" required/>
-                <div class="podname">Recipient (full name)</div>
-                <input type="text" id="fio" name="fio" class = "english-only" placeholder = "Ivanov Ivan Ivanovich" required/>
+    {% endif %}
+  </div>
+  <div class="create_order_cont">
+    <div class="product_name_text">Making an order</div>
+    <hr />
+    <form method="POST">
+      <div class="cont_order">
+        <div class="name">Contact information</div>
+        <div class="podname">Email</div>
+        <input
+          type="text"
+          id="email"
+          name="email"
+          placeholder="delovoyshln@gmail.com"
+          required
+        />
+        <div class="podname">Telephone</div>
+        <input
+          type="text"
+          id="telephone"
+          name="telephone"
+          placeholder="+375.."
+          class="numeric-plus-only"
+          required
+        />
+        <div class="podname">Recipient (full name)</div>
+        <input
+          type="text"
+          id="fio"
+          name="fio"
+          class="english-only"
+          placeholder="Ivanov Ivan Ivanovich"
+          required
+        />
+      </div>
+      <div class="cont_order">
+        <div class="name">Delivery</div>
+        <div class="order_city">
+          <div class="podname">City</div>
+          <div class="choose_city_cont">
+            <input
+              type="text"
+              id="cityInput"
+              name="cityInput"
+              class="english-only"
+              placeholder="Minsk"
+            />
+            <div id="cityContainer" class="city_container"></div>
+          </div>
+        </div>
+        <div class="type_of_order_cont">
+          <div id="form_radio1">
+            <input id="radio1" type="radio" name="radio" value="1" />
+            <label
+              >Delivery across the RB to the branch (Evropochta)
+              <span class="gray_text">from 4 days, 2.5$</span></label
+            >
+          </div>
+          <div id="form_radio2">
+            <input id="radio2" type="radio" name="radio" value="2" />
+            <label
+              >Door-to-door delivery in the RB (Evropochta)
+              <span class="gray_text">from 4 days, 4.5$</span></label
+            >
+          </div>
+          <div id="form_radio3">
+            <input id="radio3" type="radio" name="radio" value="3" />
+            <label
+              >Worldwide shipping
+              <span class="gray_text">from 7 days, 7.5$</span></label
+            >
+          </div>
+        </div>
+        <div class="order_country">
+          <div class="podname">Country</div>
+          <input
+            type="text"
+            id="country"
+            name="country"
+            class="english-only"
+            placeholder="Country of residence"
+          />
+        </div>
+        <div class="order_receiving_point">
+          <div class="podname">Receiving point №</div>
+          <input
+            type="text"
+            id="receiving_point"
+            name="receiving_point"
+            placeholder="Choose point"
+            readonly
+          />
+          <div class="cont_receiving_point">
+            {% for item in point %}
+            <div class="receiving_point_item">
+              <span>№{{item.number}}, {{item.street}}</span>
+              <span style="font-size: 14px; color: rgb(132, 132, 132)"
+                >{{item.city}}</span
+              >
             </div>
-            <div class="cont_order">
-                <div class="name">Delivery</div>
-                <div class="order_city">
-                    <div class="podname">City</div>
-                    <div class="choose_city_cont">
-                        <input type="text" id="cityInput" name="cityInput" class = "english-only" placeholder="Minsk">
-                        <div id="cityContainer" class="city_container">
-                        </div>
-                    </div>
-                </div>
-                <div class="type_of_order_cont">
-                    <div id = "form_radio1" >
-                        <input id="radio1" type="radio" name="radio" value="1">
-                        <label>Delivery across the RB to the branch (Evropochta) <span class = "gray_text">from 4 days, 2.5$</span></label>
-                    </div>
-                    <div id = "form_radio2" >
-                        <input id="radio2" type="radio" name="radio" value="2">
-                        <label>Door-to-door delivery in the RB (Evropochta) <span class = "gray_text">from 4 days, 4.5$</span></label>
-                    </div>
-                    <div id = "form_radio3">
-                        <input id="radio3" type="radio" name="radio" value="3">
-                        <label>Worldwide shipping <span class = "gray_text">from 7 days, 7.5$</span></label>
-                    </div>
-                </div>
-                <div class="order_country">
-                    <div class="podname">Country</div>
-                    <input type="text" id="country" name="country" class = "english-only" placeholder = "Country of residence"/>
-                </div>
-                <div class="order_receiving_point">
-                    <div class="podname">Receiving point №</div>
-                    <input type="text" id="receiving_point" name="receiving_point" placeholder = "Choose point" readonly/>
-                    <div class = "cont_receiving_point">
-                        {% for item in point %}
-                            <div class = "receiving_point_item">
-                                <span>№{{item.number}}, {{item.street}}</span>
-                                <span style = "font-size: 14px; color: rgb(132,132,132);">{{item.city}}</span>
-                            </div>  
-                        {% endfor %}    
-                    </div>
-                </div>
-                <div class="order_street">
-                    <div class="podname">Street</div>
-                    <input type="text" id="street" name="street" class = "english-only" />
-                </div>
-                <div class="order_house">
-                    <div class="podname">House</div>
-                    <input type="text" id="house" name="house" class = "numeric-eng"/>
-                </div>   
-                <div class="order_flat">
-                    <div class="podname">Flat</div>
-                    <input type="text" id="flat" name="flat" class = "numeric-eng"/>
-                </div>
-                <div class="podname">Comment</div>
-                <input type="text" id="coment" name="coment" placeholder = "Comment to order" class = "numeric-eng" />
-                <div class="podname">Promo code</div>
-                <input type="text" id="promocode" name="promocode" placeholder="If available" class = "numeric-eng"/>
-            </div>
-            <div class="total_cost_cont">
-
-                <div><span>The amount: </span><a id="total-price">{{ total_price }}$</a></div>
-
-                <div class="dbE">
-                    <span>Delivery across the RB to the branch (Evropochta): </span>2.5$
-                </div>
-                <div class="ddE">
-                    <span>Door-to-door delivery in the RB (Evropochta): </span>4.5$
-                </div>
-                <div class="wws">
-                    <span>World wide shipping: </span>7.5$
-                </div>
-                
-                <div class="ttam_dbE">
-                    <span>The total amount: </span><a id="total-price-dbE">{{ total_price_dbE }}$</a>
-                </div>
-                <div class="ttam_ddE">
-                    <span>The total amount: </span><a id="total-price-ddE">{{ total_price_ddE }}$</a>
-                </div>
-                <div class="ttam_wws">
-                    <span>The total amount: </span><a id="total-price-wws">{{ total_price_wws }}$</a>
-                </div>
-
-            </div>
-            {% for item in cart %}
-                <input type="hidden" id="tovar_name" name="tovar_name" value="{{ item.tovar_name }}">
-                <input type="hidden" id="tovar_quantity" name="tovar_quantity" value="{{ item.quantity }}">
             {% endfor %}
-            {%if items_count != 0 %}
-                <button type="submit" class="blue_buttom">Place an order</button>
-            {%else%}
-                <button type="submit" class="no_tems_button" disabled>Add at least one item to your cart</button >
-            {%endif%}
-        </form>
-    </div>
+          </div>
+        </div>
+        <div class="order_street">
+          <div class="podname">Street</div>
+          <input type="text" id="street" name="street" class="english-only" />
+        </div>
+        <div class="order_house">
+          <div class="podname">House</div>
+          <input type="text" id="house" name="house" class="numeric-eng" />
+        </div>
+        <div class="order_flat">
+          <div class="podname">Flat</div>
+          <input type="text" id="flat" name="flat" class="numeric-eng" />
+        </div>
+        <div class="podname">Comment</div>
+        <input
+          type="text"
+          id="coment"
+          name="coment"
+          placeholder="Comment to order"
+          class="numeric-eng"
+        />
+        <div class="podname">Promo code</div>
+        <input
+          type="text"
+          id="promocode"
+          name="promocode"
+          placeholder="If available"
+          class="numeric-eng"
+        />
+      </div>
+      <div class="total_cost_cont">
+        <div>
+          <span>The amount: </span><a id="total-price">{{ total_price }}$</a>
+        </div>
+
+        <div class="dbE">
+          <span>Delivery across the RB to the branch (Evropochta): </span>2.5$
+        </div>
+        <div class="ddE">
+          <span>Door-to-door delivery in the RB (Evropochta): </span>4.5$
+        </div>
+        <div class="wws"><span>World wide shipping: </span>7.5$</div>
+
+        <div class="ttam_dbE">
+          <span>The total amount: </span
+          ><a id="total-price-dbE">{{ total_price_dbE }}$</a>
+        </div>
+        <div class="ttam_ddE">
+          <span>The total amount: </span
+          ><a id="total-price-ddE">{{ total_price_ddE }}$</a>
+        </div>
+        <div class="ttam_wws">
+          <span>The total amount: </span
+          ><a id="total-price-wws">{{ total_price_wws }}$</a>
+        </div>
+      </div>
+      {% for item in cart %}
+      <input
+        type="hidden"
+        id="tovar_name"
+        name="tovar_name"
+        value="{{ item.tovar_name }}"
+      />
+      <input
+        type="hidden"
+        id="tovar_quantity"
+        name="tovar_quantity"
+        value="{{ item.quantity }}"
+      />
+      {% endfor %} {%if items_count != 0 %}
+      <button type="submit" class="blue_buttom">Place an order</button>
+      {%else%}
+      <button type="submit" class="no_tems_button" disabled>
+        Add at least one item to your cart
+      </button>
+      {%endif%}
+    </form>
+  </div>
 </div>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener("DOMContentLoaded", () => {
     const updateQuantity = (tovarName, newQuantity) => {
-        fetch('/update_cart', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                tovar_name: tovarName,
-                quantity: newQuantity
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const quantityInput = document.getElementById(`item-quantity-${tovarName}`);
-                const priceInput = document.getElementById(`price-${tovarName}`);
-                quantityInput.value = newQuantity;
-                priceInput.value = `${(data.cart.find(item => item.tovar_name === tovarName).price).toFixed(2)}$`;
+      fetch("/update_cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tovar_name: tovarName,
+          quantity: newQuantity,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            const quantityInput = document.getElementById(
+              `item-quantity-${tovarName}`
+            );
+            const priceInput = document.getElementById(`price-${tovarName}`);
+            quantityInput.value = newQuantity;
+            priceInput.value = `${data.cart
+              .find((item) => item.tovar_name === tovarName)
+              .price.toFixed(2)}$`;
 
-                const totalPriceElement = document.getElementById('total-price');
-                const totalPricedbE = document.getElementById('total-price-dbE');
-                const totalPriceddE = document.getElementById('total-price-ddE');
-                const totalPricewws = document.getElementById('total-price-wws');
-                const totalQuantityElement = document.getElementById('total-quantity');
+            const totalPriceElement = document.getElementById("total-price");
+            const totalPricedbE = document.getElementById("total-price-dbE");
+            const totalPriceddE = document.getElementById("total-price-ddE");
+            const totalPricewws = document.getElementById("total-price-wws");
+            const totalQuantityElement =
+              document.getElementById("total-quantity");
 
-                totalPriceElement.textContent = `${data.total_price}$`;
-                totalPricedbE.textContent = `${data.total_price_dbE}$`;
-                totalPriceddE.textContent = `${data.total_price_ddE}$`;
-                totalPricewws.textContent = `${data.total_price_wws}$`;
-                totalQuantityElement.textContent = data.total_quantity;
-            } else {
-                console.error('Ошибка обновления корзины:', data.error);
-            }
+            totalPriceElement.textContent = `${data.total_price}$`;
+            totalPricedbE.textContent = `${data.total_price_dbE}$`;
+            totalPriceddE.textContent = `${data.total_price_ddE}$`;
+            totalPricewws.textContent = `${data.total_price_wws}$`;
+            totalQuantityElement.textContent = data.total_quantity;
+          } else {
+            console.error("Ошибка обновления корзины:", data.error);
+          }
         });
     };
 
     // Обработчики для изменения количества
-    document.querySelectorAll('.busket_button_minus').forEach(button => {
-        button.addEventListener('click', () => {
-            const tovarName = button.getAttribute('data-id');
-            const input = document.getElementById(`item-quantity-${tovarName}`);
-            const newQuantity = Math.max(parseInt(input.value) - 1, 1); // Минимум 1
-            input.value = newQuantity;
-            updateQuantity(tovarName, newQuantity);
-        });
+    document.querySelectorAll(".busket_button_minus").forEach((button) => {
+      button.addEventListener("click", () => {
+        const tovarName = button.getAttribute("data-id");
+        const input = document.getElementById(`item-quantity-${tovarName}`);
+        const newQuantity = Math.max(parseInt(input.value) - 1, 1); // Минимум 1
+        input.value = newQuantity;
+        updateQuantity(tovarName, newQuantity);
+      });
     });
 
-    document.querySelectorAll('.busket_button_plus').forEach(button => {
-        button.addEventListener('click', () => {
-            const tovarName = button.getAttribute('data-id');
-            const input = document.getElementById(`item-quantity-${tovarName}`);
-            const newQuantity = parseInt(input.value) + 1;
-            input.value = newQuantity;
-            updateQuantity(tovarName, newQuantity);
-        });
+    document.querySelectorAll(".busket_button_plus").forEach((button) => {
+      button.addEventListener("click", () => {
+        const tovarName = button.getAttribute("data-id");
+        const input = document.getElementById(`item-quantity-${tovarName}`);
+        const newQuantity = parseInt(input.value) + 1;
+        input.value = newQuantity;
+        updateQuantity(tovarName, newQuantity);
+      });
     });
 
     // Обработчик для удаления товара из корзины
-    document.querySelectorAll('.busket_delete_button').forEach(button => {
-        button.addEventListener('click', () => {
-            const tovarName = button.closest('li').querySelector('.busket_button_minus').getAttribute('data-id');
-            
-            fetch('/remove_item', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ tovar_name: tovarName })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Удаляем товар из DOM
-                    const itemElement = button.closest('li');
-                    itemElement.remove();
+    document.querySelectorAll(".busket_delete_button").forEach((button) => {
+      button.addEventListener("click", () => {
+        const tovarName = button
+          .closest("li")
+          .querySelector(".busket_button_minus")
+          .getAttribute("data-id");
 
-                    // Обновляем общую информацию о корзине
-                    const totalPriceElement = document.getElementById('total-price');
-                    const totalPricedbE = document.getElementById('total-price-dbE');
-                    const totalPriceddE = document.getElementById('total-price-ddE');
-                    const totalPricewws = document.getElementById('total-price-wws');
-                    const totalQuantityElement = document.getElementById('total-quantity');
+        fetch("/remove_item", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ tovar_name: tovarName }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              // Удаляем товар из DOM
+              const itemElement = button.closest("li");
+              itemElement.remove();
 
-                    totalPriceElement.textContent = `${data.total_price}$`;
-                    totalPricedbE.textContent = `${data.total_price_dbE}$`;
-                    totalPriceddE.textContent = `${data.total_price_ddE}$`;
-                    totalPricewws.textContent = `${data.total_price_wws}$`;
-                    totalQuantityElement.textContent = data.total_quantity;
-                } else {
-                    console.error('Ошибка удаления товара:', data.error);
-                }
-            });
-        });
+              // Обновляем общую информацию о корзине
+              const totalPriceElement = document.getElementById("total-price");
+              const totalPricedbE = document.getElementById("total-price-dbE");
+              const totalPriceddE = document.getElementById("total-price-ddE");
+              const totalPricewws = document.getElementById("total-price-wws");
+              const totalQuantityElement =
+                document.getElementById("total-quantity");
+
+              totalPriceElement.textContent = `${data.total_price}$`;
+              totalPricedbE.textContent = `${data.total_price_dbE}$`;
+              totalPriceddE.textContent = `${data.total_price_ddE}$`;
+              totalPricewws.textContent = `${data.total_price_wws}$`;
+              totalQuantityElement.textContent = data.total_quantity;
+            } else {
+              console.error("Ошибка удаления товара:", data.error);
+            }
+          });
+      });
     });
-});
+  });
+</script>
 
-    </script>
-    
 {% endblock %}
-
