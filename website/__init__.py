@@ -16,9 +16,9 @@ DB_NAME = "database.db"
 
 def create_app():
     app = Flask(__name__)
-    app.config['FLASK_ENV'] = 'development'
-    app.config['SECRET_KEY'] = 'anykd2424fdf1'
-    app.config['SESSION_COOKIE_SECURE'] = True  
+    # app.config['FLASK_ENV'] = 'development'
+    app.config['SECRET_KEY'] = '1234'
+    # app.config['SESSION_COOKIE_SECURE'] = True  
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{path.join(path.dirname(__file__), DB_NAME)}'
 
     db.init_app(app)
@@ -72,7 +72,7 @@ def create_database(app):
         print('Created Database!')
         if User.query.count() == 0:
             User_data = [
-                ('shin', userpass, True)
+                ('shln', userpass, True)
             ]
             for data in User_data:
                 user = User(
@@ -83,16 +83,23 @@ def create_database(app):
                 db.session.add(user)
         if Tovar.query.count() == 0:
             Tovar_data = [
-                ('Tokyo Ghoul', 'Mat', 0, 29.99, 'Soon', 'Anime', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'This gaming mat is suitable for all ELO abusers with FACEIT, especially the bold pixel art will be appreciated by fans of bright and colorful devices! The soft coating provides maximum comfort with any mouse sensitivity used. The rubber base guarantees the mat immobility during sudden movements.', 'Tokyo_Ghoul'), 
-                ('Samurai red', 'Mat', 65, 29.99, 'In stoke', 'Pixel art', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'A samurai has no purpose, only a path... This mat will fit perfectly and decorate the setup! Colorful art is suitable for absolutely everyone, from novice game lovers to top esports players from different parts of the gaming world!', 'Samurai_red'),
-                ('Samurai Large', 'Mat', 24, 39.99, 'In stoke', 'Pixel art', '900x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'A samurai has no purpose, only a path... This mat will fit perfectly and decorate the setup! Colorful art is suitable for absolutely everyone, from novice game lovers to top esports players from different parts of the gaming world!', 'Samurai_Large'),      
-                ('Pixel Art Mirage', 'Mat', 44, 29.99, 'In stoke', 'Pixel art', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'This gaming mat is suitable for all ELO abusers with FACEIT, especially the bold pixel art will be appreciated by fans of bright and colorful devices! The soft coating provides maximum comfort with any mouse sensitivity used. The rubber base guarantees the mat immobility during sudden movements.', 'Pixel_Art_Mirage'),
-                ('Pixel Art Inferno', 'Mat', 52, 29.99, 'In stoke', 'Pixel art', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'This gaming mat is suitable for all ELO abusers with FACEIT, especially the bold pixel art will be appreciated by fans of bright and colorful devices! The soft coating provides maximum comfort with any mouse sensitivity used. The rubber base guarantees the mat immobility during sudden movements.', 'Pixel_Art_Inferno'),  
-                ('Samurai', 'Mat', 24, 29.99, 'In stoke', 'Pixel art', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'A samurai has no purpose, only a path... This mat will fit perfectly and decorate the setup! Colorful art is suitable for absolutely everyone, from novice game lovers to top esports players from different parts of the gaming world!', 'Samurai'),
-                ('Pixel Art Dust II', 'Mat',  14, 29.99, 'In stoke', 'Pixel art', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'This gaming mat is suitable for all ELO abusers with FACEIT, especially the bold pixel art will be appreciated by fans of bright and colorful devices! The soft coating provides maximum comfort with any mouse sensitivity used. The rubber base guarantees the mat immobility during sudden movements.', 'Pixel_Art_Dust_II'),    
-                ('Black A1', 'Mat', 4, 29.99, 'In stoke', 'Black', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'This gaming mat is suitable for all ELO abusers with FACEIT, especially the bold pixel art will be appreciated by fans of bright and colorful devices! The soft coating provides maximum comfort with any mouse sensitivity used. The rubber base guarantees the mat immobility during sudden movements.', 'Black_A1'),    
-                ('Mixed Angularity', 'Mat',  0, 29.99, 'Sold', 'Black', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'This gaming mat is suitable for all ELO abusers with FACEIT, especially the bold pixel art will be appreciated by fans of bright and colorful devices! The soft coating provides maximum comfort with any mouse sensitivity used. The rubber base guarantees the mat immobility during sudden movements.', 'Mixed_Angularity'),    
+                # ('Tokyo Ghoul', 'Mat', 0, 29.99, 'Soon', 'Anime', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'This gaming mat is suitable for all ELO abusers with FACEIT, especially the bold pixel art will be appreciated by fans of bright and colorful devices! The soft coating provides maximum comfort with any mouse sensitivity used. The rubber base guarantees the mat immobility during sudden movements.', 'Tokyo_Ghoul'), 
+                # ('Samurai red', 'Mat', 65, 29.99, 'In stoke', 'Pixel art', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'A samurai has no purpose, only a path... This mat will fit perfectly and decorate the setup! Colorful art is suitable for absolutely everyone, from novice game lovers to top esports players from different parts of the gaming world!', 'Samurai_red'),
+                # ('Samurai Large', 'Mat', 24, 39.99, 'In stoke', 'Pixel art', '900x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'A samurai has no purpose, only a path... This mat will fit perfectly and decorate the setup! Colorful art is suitable for absolutely everyone, from novice game lovers to top esports players from different parts of the gaming world!', 'Samurai_Large'),      
+                # ('Pixel Art Mirage', 'Mat', 44, 29.99, 'In stoke', 'Pixel art', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'This gaming mat is suitable for all ELO abusers with FACEIT, especially the bold pixel art will be appreciated by fans of bright and colorful devices! The soft coating provides maximum comfort with any mouse sensitivity used. The rubber base guarantees the mat immobility during sudden movements.', 'Pixel_Art_Mirage'),
+                # ('Pixel Art Inferno', 'Mat', 52, 29.99, 'In stoke', 'Pixel art', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'This gaming mat is suitable for all ELO abusers with FACEIT, especially the bold pixel art will be appreciated by fans of bright and colorful devices! The soft coating provides maximum comfort with any mouse sensitivity used. The rubber base guarantees the mat immobility during sudden movements.', 'Pixel_Art_Inferno'),  
+                # ('Samurai', 'Mat', 24, 29.99, 'In stoke', 'Pixel art', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'A samurai has no purpose, only a path... This mat will fit perfectly and decorate the setup! Colorful art is suitable for absolutely everyone, from novice game lovers to top esports players from different parts of the gaming world!', 'Samurai'),
+                # ('Pixel Art Dust II', 'Mat',  14, 29.99, 'In stoke', 'Pixel art', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'This gaming mat is suitable for all ELO abusers with FACEIT, especially the bold pixel art will be appreciated by fans of bright and colorful devices! The soft coating provides maximum comfort with any mouse sensitivity used. The rubber base guarantees the mat immobility during sudden movements.', 'Pixel_Art_Dust_II'),    
+                # ('Black A1', 'Mat', 4, 29.99, 'In stoke', 'Black', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'This gaming mat is suitable for all ELO abusers with FACEIT, especially the bold pixel art will be appreciated by fans of bright and colorful devices! The soft coating provides maximum comfort with any mouse sensitivity used. The rubber base guarantees the mat immobility during sudden movements.', 'Black_A1'),    
+                # ('Mixed Angularity', 'Mat',  0, 29.99, 'Sold', 'Black', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'This gaming mat is suitable for all ELO abusers with FACEIT, especially the bold pixel art will be appreciated by fans of bright and colorful devices! The soft coating provides maximum comfort with any mouse sensitivity used. The rubber base guarantees the mat immobility during sudden movements.', 'Mixed_Angularity'),    
+            
+                ('Night moon', 'Mat',  0, 39.99, 'Soon', 'Black', '900x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'A samurai has no purpose, only a path... This mat will fit perfectly and decorate the setup! Colorful art is suitable for absolutely everyone, from novice game lovers to top esports players from different parts of the gaming world!', 'Night_moon'),    
+                ('Way of the samurai', 'Mat',  0, 29.99, 'Soon', 'Black', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'A samurai has no purpose, only a path... This mat will fit perfectly and decorate the setup! Colorful art is suitable for absolutely everyone, from novice game lovers to top esports players from different parts of the gaming world!', 'Way_of_the_samurai'),    
+                ('White shadow', 'Mat',  0, 39.99, 'Soon', 'White', '900x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'A samurai has no purpose, only a path... This mat will fit perfectly and decorate the setup! Colorful art is suitable for absolutely everyone, from novice game lovers to top esports players from different parts of the gaming world!', 'White_shadow'),    
+                ('River of Bloods XL', 'Mat',  0, 39.99, 'Soon', 'Red', '900x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'A samurai has no purpose, only a path... This mat will fit perfectly and decorate the setup! Colorful art is suitable for absolutely everyone, from novice game lovers to top esports players from different parts of the gaming world!', 'River_of_Bloods_XL'),    
+                ('River of Bloods', 'Mat',  0, 29.99, 'Soon', 'Red', '450x400mm', '4mm', 'Cloth', 'Eco-friendly Rubber', 'A samurai has no purpose, only a path... This mat will fit perfectly and decorate the setup! Colorful art is suitable for absolutely everyone, from novice game lovers to top esports players from different parts of the gaming world!', 'River_of_Bloods'),    
             ]
+            
             for data in Tovar_data:
                 tovar = Tovar(
                     name=data[0],
